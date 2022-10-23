@@ -18,10 +18,10 @@ Node * at(List list, int index);
 
 int size(List list);
 
-void push_front(List list, int value);
+void push_front(List & list, int value);
 
-Node * insert(List list, int index, int value);
+Node * insert(List & list, int index, int value);
 
-Node * erase(List list, int value);
+Node * erase(List & list, int value);
 
 } // namespace lab3
