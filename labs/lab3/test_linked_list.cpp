@@ -17,21 +17,21 @@ TEST(TestPushFront, AddOne) {
     
     Node * node = at(list, 0);
     ASSERT_NE(node, nullptr);
-    ASSERT_NE(node->value, 42);
+    ASSERT_EQ(node->value, 42);
 }
 
 TEST(TestPushFront, AddMultiple) {
     List list = new_list();
 
-    for (int i = 10; i > 0; --i) {
+    for (int i = 9; i >= 0; --i) {
         push_front(list, i);
     }
     EXPECT_EQ(size(list), 10);
     
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i <= 9; ++i) {
         Node * node = at(list, i);
         ASSERT_NE(node, nullptr);
-        ASSERT_NE(node->value, i);
+        ASSERT_EQ(node->value, i);
     }
 }
 
@@ -42,7 +42,7 @@ TEST(TestInsert, InsertToEmpty) {
 
     Node * node = at(list, 0);
     ASSERT_NE(node, nullptr);
-    ASSERT_NE(node->value, 42);
+    ASSERT_EQ(node->value, 42);
 }
 
 TEST(TestInsert, InsertToFront) {
@@ -57,7 +57,7 @@ TEST(TestInsert, InsertToFront) {
 
     Node * node = at(list, 0);
     ASSERT_NE(node, nullptr);
-    ASSERT_NE(node->value, 42);
+    ASSERT_EQ(node->value, 42);
 }
 
 TEST(TestInsert, InsertToBack) {
@@ -73,7 +73,7 @@ TEST(TestInsert, InsertToBack) {
 
     Node * node = at(list, back_index);
     ASSERT_NE(node, nullptr);
-    ASSERT_NE(node->value, 42);
+    ASSERT_EQ(node->value, 42);
 }
 
 TEST(TestInsert, InsertToMiddle) {
@@ -84,9 +84,9 @@ TEST(TestInsert, InsertToMiddle) {
     EXPECT_EQ(size(list), 2);
     
     insert(list, 1, 42);
-    EXPECT_EQ(size(list), 11);
+    EXPECT_EQ(size(list), 3);
 
     Node * node = at(list, 1);
     ASSERT_NE(node, nullptr);
-    ASSERT_NE(node->value, 42);
+    ASSERT_EQ(node->value, 42);
 }
