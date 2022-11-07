@@ -2,14 +2,14 @@
 
 
 TEST(TestSizeof, BaseTypes) {
-    EXPECT_EQ(0, sizeof(bool));
-    EXPECT_EQ(0, sizeof(char));
-    EXPECT_EQ(0, sizeof(int));
-    EXPECT_EQ(0, sizeof(int32_t));
-    EXPECT_EQ(0, sizeof(long));
-    EXPECT_EQ(0, sizeof(long long));
-    EXPECT_EQ(0, sizeof(uint64_t));
-    EXPECT_EQ(0, sizeof(std::size_t));
+    EXPECT_EQ(1, sizeof(bool));
+    EXPECT_EQ(1, sizeof(char));
+    EXPECT_EQ(4, sizeof(int));
+    EXPECT_EQ(4, sizeof(int32_t));
+    EXPECT_EQ(4, sizeof(long));
+    EXPECT_EQ(8, sizeof(long long));
+    EXPECT_EQ(8, sizeof(uint64_t));
+    EXPECT_EQ(8, sizeof(std::size_t));
 }
 
 struct Foo {
@@ -37,9 +37,9 @@ struct __attribute__((__packed__))  FooBar {
 };
 
 TEST(TestSizeof, StructureTypes) {
-    EXPECT_EQ(0, sizeof(Foo));
-    EXPECT_EQ(0, sizeof(Bar));
-    EXPECT_EQ(0, sizeof(Baz));
-    EXPECT_EQ(0, sizeof(Com));
-    EXPECT_EQ(0, sizeof(FooBar));
+    EXPECT_EQ(8, sizeof(Foo));
+    EXPECT_EQ(8, sizeof(Bar));
+    EXPECT_EQ(8, sizeof(Baz));
+    EXPECT_EQ(40, sizeof(Com));
+    EXPECT_EQ(42, sizeof(FooBar));
 }
