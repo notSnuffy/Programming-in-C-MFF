@@ -1,4 +1,5 @@
 #include "list.h"
+#include <memory>
 
 namespace lab8 {
 
@@ -6,18 +7,18 @@ struct SingleLinkedList : List {
  private:
 	// Inner type definitions
 	struct Node {
-		Node * next;
+		std::shared_ptr<Node> next;
 		int value;
 	};
 
 	// Properties declaration
-	Node * head{};
+	std::shared_ptr<Node> head{};
 
 	// Public interface implementation
  public:
 	int size() const override {
 		int size = 0;
-		Node * current = head;
+		std::shared_ptr<Node> current = head;
 		while (current) {
 			++size;
 			current = current->next;
@@ -26,13 +27,15 @@ struct SingleLinkedList : List {
 	}
 
 	void push_front(int value) override {
-		Node * current_head = this->head;
-		Node * new_head = new Node{.next=current_head, .value=value};
+		std::shared_ptr<Node> current_head = this->head;
+		std::shared_ptr<Node> new_head = std::make_shared<Node>();
+		new_head->next = current_head;
+		new_head->value = value;
 		this->head = new_head;
 	}
 
 	int at(int index) const override {
-		Node * current = this->head;
+		std::shared_ptr<Node> current = this->head;
 		for (int i = 0; i < index && current; ++i) {
 			current = current->next;
 		}
@@ -45,8 +48,8 @@ struct SingleLinkedList : List {
 			return;
 		}
 
-		Node * previous = nullptr;
-		Node * current = this->head;
+		std::shared_ptr<Node> previous = nullptr;
+		std::shared_ptr<Node> current = this->head;
 		for (int i = 0; i < index; ++i) {
 			if (!current) {
 				return;
@@ -54,12 +57,14 @@ struct SingleLinkedList : List {
 			previous = current;
 			current = current->next;
 		}
-		Node * inserted = new Node{.next=current, .value=value};
+		std::shared_ptr<Node> inserted = std::make_shared<Node>();
+		inserted->next = current;
+		inserted->value = value;
 		previous->next = inserted;
 	}
 
 	void erase(int index) override {
-		Node * current = head;
+		std::shared_ptr<Node> current = head;
 		if (index == 0) {
 			if (!head) {
 				return;
@@ -68,7 +73,7 @@ struct SingleLinkedList : List {
 			return;
 		}
 
-		Node * previous = nullptr;
+		std::shared_ptr<Node> previous = nullptr;
 		for (int i = 0; i < index; ++i) {
 			if (!current) {
 				return;

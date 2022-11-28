@@ -11,11 +11,11 @@ struct Common {
 };
 
 struct B {
-    Common * x;
+    std::shared_ptr<Common> x;
 };
 
 struct C {
-    Common * x;
+    std::shared_ptr<Common> x;
 };
 
 void foo(std::unique_ptr<int> i) {
@@ -28,11 +28,12 @@ void foo(std::vector<std::unique_ptr<int>> & x) {
 
 int main() {
     {
-        auto x = new A{10};
+        auto x = std::make_unique<A>();
+        x->x = 10;
     }
 
     {
-        auto x = new Common{};
+        auto x = std::make_shared<Common>();
         B b{x};
         C c{x};
     }
