@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #define DEBUG
-//#define SOLUTION
+#define SOLUTION
 
 struct CtorCounter {
     uint32_t empty{};
@@ -106,7 +106,7 @@ TEST_F(TestCtorCount, Declare) {
     {
         A x;
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .destructor=1};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -117,7 +117,7 @@ TEST_F(TestCtorCount, BasicNewCtor) {
 
         delete x;
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=2, .destructor=1};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -126,7 +126,7 @@ TEST_F(TestCtorCount, ArrayCtor) {
         A x[10];
         A * y = new A[10];
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=20, .destructor=10};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -135,7 +135,7 @@ TEST_F(TestCtorCount, CopyCtor) {
         A x{};
         A y{x};
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .copy=1, .destructor=2};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -144,7 +144,7 @@ TEST_F(TestCtorCount, CopyAsgn) {
         A x{};
         A y = x;
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .copy=1, .destructor=2};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -155,7 +155,7 @@ TEST_F(TestCtorCount, CopyAsgn2) {
 
         x = y;
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=2, .copy_asgn=1, .destructor=2};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -164,7 +164,7 @@ TEST_F(TestCtorCount, Move) {
         A x{};
         A y{std::move(x)};
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .move=1, .destructor=2};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -174,7 +174,7 @@ TEST_F(TestCtorCount, MoveAsgn) {
         A y{};
         x = std::move(y);
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=2, .move_asgn=1, .destructor=2};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -183,7 +183,7 @@ TEST_F(TestCtorCount, Asgn) {
         A x;
         x = A{};
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=2, .move_asgn=1, .destructor=2};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -198,7 +198,7 @@ TEST_F(TestCtorCount, Bar) {
         A x{};
         bar(x);
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .copy=1, .destructor=2 };
     EXPECT_EQ(A::counter, result);
 }
 
@@ -225,7 +225,7 @@ TEST_F(TestCtorCount, Foo1) {
         A x{};
         foo(x);
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .destructor=1};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -234,7 +234,7 @@ TEST_F(TestCtorCount, Foo2) {
         A x{};
         foo(std::move(x));
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .destructor=1};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -244,9 +244,9 @@ A baz1() {
 }
 
 TEST_F(TestCtorCount, Baz1) {
-    baz1();
+    baz1(); //A x = baz1();
 
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .move_asgn=0, .destructor=1};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -254,7 +254,7 @@ TEST_F(TestCtorCount, RVO) {
     {
         A x = baz1();
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .move_asgn=0, .destructor=1};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -267,7 +267,7 @@ TEST_F(TestCtorCount, Baz2) {
     {
         A x = baz2();
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .move=1, .destructor=2};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -286,7 +286,7 @@ TEST_F(TestCtorCount, Baz34) {
         auto x = baz3();
         x = baz4();
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -297,9 +297,9 @@ A & baz5() {
 
 TEST_F(TestCtorCount, Baz5) {
     {
-        auto x = baz4();
+        auto x = baz5();
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .copy=1, .destructor=1};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -308,7 +308,7 @@ TEST_F(TestCtorCount, AddToVector1) {
         std::vector<A> x{};
         x.push_back(A{});
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .move=1, .destructor=2};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -318,7 +318,7 @@ TEST_F(TestCtorCount, AddToVector2) {
         A y{};
         x.push_back(y);
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .copy=1, .destructor=2};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -328,7 +328,7 @@ TEST_F(TestCtorCount, AddToVector3) {
         A y{};
         x.push_back(std::move(y));
     }
-    auto result = CtorCounter{};
+    auto result = CtorCounter{.empty=1, .move=1, .destructor=2};
     EXPECT_EQ(A::counter, result);
 }
 
@@ -358,7 +358,7 @@ TEST_F(TestDestructorCounter, DestructorCount1) {
     {
         C x;
     }
-    EXPECT_EQ(destructor_counter, 0);
+    EXPECT_EQ(destructor_counter, 2);
 }
 
 TEST_F(TestDestructorCounter, DestructorCount2) {
@@ -366,7 +366,7 @@ TEST_F(TestDestructorCounter, DestructorCount2) {
         C * x = new C{};
         delete x;
     }
-    EXPECT_EQ(destructor_counter, 0);
+    EXPECT_EQ(destructor_counter, 2);
 }
 
 TEST_F(TestDestructorCounter, DestructorCount3) {
@@ -374,5 +374,5 @@ TEST_F(TestDestructorCounter, DestructorCount3) {
         B * x = new C{};
         delete x;
     }
-    EXPECT_EQ(destructor_counter, 0);
+    EXPECT_EQ(destructor_counter, 1);
 }

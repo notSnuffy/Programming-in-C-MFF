@@ -28,7 +28,7 @@ int main() {
     #endif
 
     #if 1
-        std::cout << "// Doube free" << std::endl;
+        std::cout << "// Double free" << std::endl;
         int * d = new int{};
         delete d;
         delete d;
