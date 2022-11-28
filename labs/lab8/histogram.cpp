@@ -4,5 +4,5 @@
 
 int main() {
     Histogram h{std::cin};
-    std::cout << h.char_count('c');
+    std::cout << h.char_count();
 }

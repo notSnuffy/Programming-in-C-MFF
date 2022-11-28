@@ -4,7 +4,7 @@
 #include <iostream>
 
 TEST(TestHistogram, CharCount) {
-    std::stringstream ss{"aaabbcc"};
+    std::stringstream ss{"aaabbc"};
     Histogram h(ss);
 
     EXPECT_EQ(h.char_count('a'), 3);
