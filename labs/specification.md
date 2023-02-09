@@ -1,9 +1,6 @@
 # *Binary Search Trees*
 
 
-> Fill in *emphasized text*, comments like these are supposed to guide you. Select best/all that apply, delete the rest.
-> For submission send me the git commit hash of your project idea.
-
 **Author:** *Holub Lukáš*
 
 **Type:** *Library*
@@ -13,19 +10,11 @@
 **Perceived difficulty:** *5-7*
 
 *Short description and motivation*
-> 1-3 sentences about what you want to do and why
-I have written library for shortest paths in C# so I thought I would try
-to write a search tree library in C++ because the shortest paths library was
-kind of fun to program
 
 ## User interface
 *Programmers who need a search tree data structrute*
 
-> Delete UI type that does not apply
-
-
 ### Library
-> In markdown use three back quotes to create code block
 ```c++
 class Search Tree
     function traverse;
@@ -35,14 +24,12 @@ class Search Tree
 ```
 
 > It would be nicer if you were to accomodate this within C++ algorithms infrastructure i.e. provide some interators that are appropriate for given type of binary tree.
-
-> Something like simplified header file.
+I guess I could try to implement an iterator instead of the traversal method. Maybe a bidirectional iterator that traverses inorder, but I am not sure how to really implement it since the interface requires dereference so if user changed the value how can I preserve the tree invariant or should I just implement the iterator using const values?
 
 ## Architecture
 
-*templated class in header files for BST, AVL and probably red-black tree*
+*templated class in header files for BST, AVL*
 
-> If you go with red-black trees, that would be sufficient, otherwise doing BSt and AVL seems enough.
 
 ## Development & Testing
 **Build system:** *CMake*
@@ -52,14 +39,14 @@ class Search Tree
 **Required libraries/frameworks:** *STD*
 
 *Test if basic operations work correctly eventhough it is a bit difficult in graph-like data structures*
->Think about unit, functional, and performance tests.
 
-> Unit tests are straight forward though you can never be sure of 100% correctness :-D. Do you want to try some performance tests as well and compare your implementation with some existing one?
+> Do you want to try some performance tests as well and compare your implementation with some existing one?
+I can try some performance tests eventhough I have never done them before. Would I use the chrono header or should I try to learn the google benchmark library.
+I can also try to find some other implementations of the trees and compare it with mine. Would finding implementations in other languages also count?
 
 ## Acceptance criteria
-> In software engineering it is common that your estimates are not met with reality. In order to reflect that decide how would you split your project into MVP and further enhancements/improvements. MVP should just meet the bar for final project submission. Extensions are additional features that you would like to add but don't consider them essential.
 
-**Minimum Viable Product:*Basic operations for said trees*
-> I'm not sure if this is enough, if you were to include some performance comparison test, that would be enough for "zapoctak".
+
+**Minimum Viable Product:*Basic operations for said trees and comparison test*
 
 **Extensions:*Maybe print function or some visualisation*
