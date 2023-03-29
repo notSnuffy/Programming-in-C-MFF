@@ -124,29 +124,35 @@ public:
 
     std::optional<T> successor(const T &value) const
     {
-        Node<T> *current = root.get();
+        Node<T> *current = return_node_with_value(value);
 
-        // Empty tree
+        // No node
         if (current == nullptr)
         {
             return {};
         }
 
-        while (current != nullptr)
+        // If right child exists -> successor is minimum from that child
+        if (current->right != nullptr)
         {
-            if (is_less_than(value, current->value))
-            {
-                current = current->left.get();
-            }
-            else if (is_less_than(current->value, value))
-            {
-                current = current->right.get();
-            }
-            else
-            {
-                break;
-            }
+            return minimum(current->right->value).value();
         }
+
+        // Successor is supposed to be parent of the closest ancestor that is left child
+        Node<T> *parent = current->parent;
+        while (parent != nullptr && is_equal(current->value, parent->right->value))
+        {
+            current = parent;
+            parent = parent->parent;
+        }
+
+        // No successor
+        if (parent == nullptr)
+        {
+            return {};
+        }
+
+        return parent->value;
     }
 
     bool insert(const T &value)
