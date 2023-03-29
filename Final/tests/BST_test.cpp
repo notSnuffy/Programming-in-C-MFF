@@ -114,22 +114,19 @@ TEST(TestMaximum, NoParamValid) {
 
 TEST(TestMaximum, NoParamInvalid) {
     BinarySearchTree<int> tree;
-    int maximum = tree.maximum().value_or(-12312312);
-    ASSERT_EQ(maximum, -12312312);
+    ASSERT_FALSE(tree.maximum().has_value());
 }
 
 TEST(TestMaximum, WithParamInvalidEmptyTree)
 {
     BinarySearchTree<int> tree;
-    int maximum = tree.maximum(10).value_or(-12312312);
-    ASSERT_EQ(maximum, -12312312);
+    ASSERT_FALSE(tree.maximum(10).has_value());
 }
 
 TEST(TestMaximum, WithParamInvalidNoNode)
 {
     BinarySearchTree<int> tree = create_simple_tree();
-    int maximum = tree.maximum(20).value_or(-12312312);
-    ASSERT_EQ(maximum, -12312312);
+    ASSERT_FALSE(tree.maximum(20).has_value());
 }
 
 TEST(TestMaximum, WithParamValidRoot) {
@@ -162,22 +159,19 @@ TEST(TestMinimum, NoParamValid)
 TEST(TestMinimum, NoParamInvalid)
 {
     BinarySearchTree<int> tree;
-    int minimum = tree.minimum().value_or(-12312312);
-    ASSERT_EQ(minimum, -12312312);
+    ASSERT_FALSE(tree.minimum().has_value());
 }
 
 TEST(TestMinimum, WithParamInvalidEmptyTree)
 {
     BinarySearchTree<int> tree;
-    int minimum = tree.minimum(10).value_or(-12312312);
-    ASSERT_EQ(minimum, -12312312);
+    ASSERT_FALSE(tree.minimum(10).has_value());
 }
 
 TEST(TestMinimum, WithParamInvalidNoNode)
 {
     BinarySearchTree<int> tree = create_simple_tree();
-    int minimum = tree.minimum(20).value_or(-12312312);
-    ASSERT_EQ(minimum, -12312312);
+    ASSERT_FALSE(tree.minimum(20).has_value());
 }
 
 TEST(TestMinimum, WithParamValidRoot)
@@ -203,20 +197,17 @@ TEST(TestMinimum, WithParamValidLeafNode)
 
 TEST(TestSuccessor, NoNodeInvalid) {
     BinarySearchTree<int> tree = create_simple_tree();
-    int successor = tree.successor(100).value_or(-12312312);
-    ASSERT_EQ(successor, -12312312);
+    ASSERT_FALSE(tree.successor(100).has_value());
 }
 
 TEST(TestSuccessor, EmptyTreeInvalid) {
     BinarySearchTree<int> tree;
-    int successor = tree.successor(100).value_or(-12312312);
-    ASSERT_EQ(successor, -12312312);
+    ASSERT_FALSE(tree.successor(100).has_value());
 }
 
 TEST(TestSuccessor, NoSuccessorInvalid) {
     BinarySearchTree<int> tree = create_simple_tree();
-    int succesor = tree.successor(14).value_or(-12312312);
-    ASSERT_EQ(succesor, -12312312);
+    ASSERT_FALSE(tree.successor(14).has_value());
 }
 
 TEST(TestSuccessor, RootNodeValid) {
