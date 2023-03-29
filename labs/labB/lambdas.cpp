@@ -78,6 +78,23 @@ int main(void)
     {
         std::cout << "Task 1: rewrite examples 1 and 2 using lambdas" << std::endl;
         std::vector<int> v{9,8,1,2,8,7,9,4};
+
+        const int find = 2;
+        auto it = std::find_if(v.cbegin(), v.cend(), [find](int element) {
+            return element == find;
+        });
+        if (it != v.cend()) {
+            std::cout << "Found: " << *it << " at index " << std::distance(v.cbegin(), it) << std::endl;
+        } else {
+            std::cout << "Not found: " << find << std::endl;
+        }
+
+        int sum = 0;
+        std::for_each(v.cbegin(), v.cend(), [&sum](int element) {
+            sum += element;
+        });
+        std::cout << "Summer result: " << sum << std::endl;
+
     }
 
     std::cout << std::endl;
@@ -86,6 +103,17 @@ int main(void)
         constexpr int x = 5;
         std::cout << "Task 2: Find first element different from previous by at least " << x << std::endl;
         std::vector<int> v{9,8,1,2,8,7,9,4};
+
+        int previous = v.front();
+
+        auto it = std::find_if(v.cbegin(), v.cend(), [&previous, x](int element) {
+            return std::abs(previous - element) > x;
+        });
+        if (it != v.cend()) {
+            std::cout << "Found: " << *it << " at index " << std::distance(v.cbegin(), it) << std::endl;
+        } else {
+            std::cout << "Not found: " << std::endl;
+        }
     }
 
     std::cout << std::endl;

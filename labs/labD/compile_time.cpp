@@ -1,5 +1,6 @@
 #include <array>
 #include <iostream>
+#include <chrono>
 
 constexpr int max(int a, int b) 
 { 
@@ -34,6 +35,16 @@ constexpr std::array<size_t, N> precompute_fibonacci() {
 }
 static constexpr auto precomputed_fibonacci = precompute_fibonacci();
 
+
+int fibonacci(int i) {
+    if(i == 0) {
+        return 0;
+    } else if(i == 1) {
+        return 1;
+    }
+    return fibonacci(i - 1) + fibonacci(i - 2);
+}
+
 std::array<size_t, N> compute_fibonacci() {
     std::array<size_t, N> a{};
 
@@ -41,6 +52,9 @@ std::array<size_t, N> compute_fibonacci() {
         // TODO 2: compute fibonacci array using already precomputed values in `a`
     } else {
         // TODO 1: compute fibonacci array using non optimal recursive function
+        for(int i = 0; i < N; ++i) {
+            a[i] = fibonacci(i);
+        }
     }
     return a;
 }

@@ -11,7 +11,7 @@ T min(const T & a, const T & b)
 }
 
 template<typename T, size_t N>
-T size(const T (& array) [N])
+size_t size(const T (& array) [N])
 {
     return N;
 }
