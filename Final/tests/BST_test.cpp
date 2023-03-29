@@ -100,3 +100,24 @@ TEST(TestHasValueInvalid, DeeplyNestedTree)
     tree.insert(7);
     ASSERT_FALSE(tree.has_value(100));
 }
+
+TEST(TestMaximum, Valid) {
+    BinarySearchTree<int> tree;
+    tree.insert(8);
+    tree.insert(3);
+    tree.insert(10);
+    tree.insert(14);
+    tree.insert(13);
+    tree.insert(1);
+    tree.insert(6);
+    tree.insert(4);
+    tree.insert(7);
+    int maximum = tree.maximum().value();
+    ASSERT_EQ(maximum, 14);
+}
+
+TEST(TestMaximum, Invalid) {
+    BinarySearchTree<int> tree;
+    int maximum = tree.maximum().value_or(-12312312);
+    ASSERT_EQ(maximum, -12312312);
+}
