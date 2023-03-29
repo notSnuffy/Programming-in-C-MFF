@@ -14,17 +14,46 @@ private:
         return compare(a, b);
     }
 
+    Node<T> *return_node_with_value(const T &value) const
+    {
+        Node<T> *current = root.get();
+
+        while (current != nullptr)
+        {
+            if (is_less_than(value, current->value))
+            {
+                current = current->left.get();
+            }
+            else if (is_less_than(current->value, value))
+            {
+                current = current->right.get();
+            }
+            else
+            {
+                return current;
+            }
+        }
+
+        return nullptr;
+    }
+
 public:
     bool has_value(const T &value) const
     {
-        Node<T>* current = root.get();
+        Node<T> *current = root.get();
 
-        while(current != nullptr) {
-            if(is_less_than(value, current->value)) {
+        while (current != nullptr)
+        {
+            if (is_less_than(value, current->value))
+            {
                 current = current->left.get();
-            } else if(is_less_than(current->value, value)) {
+            }
+            else if (is_less_than(current->value, value))
+            {
                 current = current->right.get();
-            } else {
+            }
+            else
+            {
                 return true;
             }
         }
@@ -32,17 +61,78 @@ public:
         return false;
     }
 
-    std::optional<T> maximum() const {
-        Node<T>* current = root.get();
+    std::optional<T> maximum(const T &value) const
+    {
+        Node<T> *current = return_node_with_value(value);
 
-        if(current == nullptr) {
+        // No node with value
+        if (current == nullptr)
+        {
             return {};
         }
 
-        while(current->right != nullptr) {
+        // Go all the way to the right
+        while (current->right != nullptr)
+        {
             current = current->right.get();
         }
         return current->value;
+    }
+
+    std::optional<T> maximum() const
+    {
+        // Empty tree
+        if (root == nullptr)
+        {
+            return {};
+        }
+
+        return maximum(root->value);
+    }
+
+    std::optional<T> minimum() const
+    {
+        Node<T> *current = root.get();
+
+        // Empty tree
+        if (current == nullptr)
+        {
+            return {};
+        }
+
+        // Go all the way to the left
+        while (current->left != nullptr)
+        {
+            current = current->left.get();
+        }
+        return current->value;
+    }
+
+    std::optional<T> successor(const T &value) const
+    {
+        Node<T> *current = root.get();
+
+        // Empty tree
+        if (current == nullptr)
+        {
+            return {};
+        }
+
+        while (current != nullptr)
+        {
+            if (is_less_than(value, current->value))
+            {
+                current = current->left.get();
+            }
+            else if (is_less_than(current->value, value))
+            {
+                current = current->right.get();
+            }
+            else
+            {
+                break;
+            }
+        }
     }
 
     bool insert(const T &value)
