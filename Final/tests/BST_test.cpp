@@ -1,6 +1,8 @@
 #include "BST.h"
 #include <gtest/gtest.h>
 
+
+
 TEST(TestInsertValid, RootNode)
 {
 
@@ -192,7 +194,7 @@ TEST(TestMaximum, WithParamValidLeafNode)
     ASSERT_EQ(maximum, 4);
 }
 
-TEST(TestMinimum, Valid)
+TEST(TestMinimum, NoParamValid)
 {
     BinarySearchTree<int> tree;
     tree.insert(8);
@@ -208,9 +210,80 @@ TEST(TestMinimum, Valid)
     ASSERT_EQ(minimum, 1);
 }
 
-TEST(TestMinimum, Invalid)
+TEST(TestMinimum, NoParamInvalid)
 {
     BinarySearchTree<int> tree;
     int minimum = tree.minimum().value_or(-12312312);
     ASSERT_EQ(minimum, -12312312);
+}
+
+TEST(TestMinimum, WithParamInvalidEmptyTree)
+{
+    BinarySearchTree<int> tree;
+    int minimum = tree.minimum(10).value_or(-12312312);
+    ASSERT_EQ(minimum, -12312312);
+}
+
+TEST(TestMinimum, WithParamInvalidNoNode)
+{
+    BinarySearchTree<int> tree;
+    tree.insert(8);
+    tree.insert(3);
+    tree.insert(10);
+    tree.insert(14);
+    tree.insert(13);
+    tree.insert(1);
+    tree.insert(6);
+    tree.insert(4);
+    tree.insert(7);
+    int minimum = tree.minimum(20).value_or(-12312312);
+    ASSERT_EQ(minimum, -12312312);
+}
+
+TEST(TestMinimum, WithParamValidRoot)
+{
+    BinarySearchTree<int> tree;
+    tree.insert(8);
+    tree.insert(3);
+    tree.insert(10);
+    tree.insert(14);
+    tree.insert(13);
+    tree.insert(1);
+    tree.insert(6);
+    tree.insert(4);
+    tree.insert(7);
+    int minimum = tree.minimum(6).value();
+    ASSERT_EQ(minimum, 4);
+}
+
+TEST(TestMinimum, WithParamValidMiddleNode)
+{
+    BinarySearchTree<int> tree;
+    tree.insert(8);
+    tree.insert(3);
+    tree.insert(10);
+    tree.insert(14);
+    tree.insert(13);
+    tree.insert(1);
+    tree.insert(6);
+    tree.insert(4);
+    tree.insert(7);
+    int minimum = tree.minimum(10).value();
+    ASSERT_EQ(minimum, 10);
+}
+
+TEST(TestMinimum, WithParamValidLeafNode)
+{
+    BinarySearchTree<int> tree;
+    tree.insert(8);
+    tree.insert(3);
+    tree.insert(10);
+    tree.insert(14);
+    tree.insert(13);
+    tree.insert(1);
+    tree.insert(6);
+    tree.insert(4);
+    tree.insert(7);
+    int minimum = tree.minimum(7).value();
+    ASSERT_EQ(minimum, 7);
 }
