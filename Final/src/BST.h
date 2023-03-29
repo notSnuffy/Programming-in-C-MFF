@@ -8,12 +8,29 @@ class BinarySearchTree
 private:
     std::unique_ptr<Node<T>> root;
 
-    bool is_less_than(const T &a, const T &b, Comparator compare = Comparator{})
+    bool is_less_than(const T &a, const T &b, Comparator compare = Comparator{}) const
     {
         return compare(a, b);
     }
 
 public:
+    bool has_value(const T &value) const
+    {
+        Node<T>* current = root.get();
+
+        while(current != nullptr) {
+            if(is_less_than(value, current->value)) {
+                current = current->left.get();
+            } else if(is_less_than(current->value, value)) {
+                current = current->right.get();
+            } else {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     bool insert(const T &value)
     {
         // Insert to root
@@ -50,7 +67,9 @@ public:
         {
             parent->left = std::make_unique<Node<T>>(value);
             parent->left->parent = parent;
-        } else {
+        }
+        else
+        {
             parent->right = std::make_unique<Node<T>>(value);
             parent->right->parent = parent;
         }
