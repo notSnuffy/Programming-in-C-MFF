@@ -90,11 +90,11 @@ public:
         return maximum(root->value);
     }
 
-    std::optional<T> minimum() const
+    std::optional<T> minimum(const T &value) const
     {
-        Node<T> *current = root.get();
+        Node<T> *current = return_node_with_value(value);
 
-        // Empty tree
+        // No node with value
         if (current == nullptr)
         {
             return {};
@@ -106,6 +106,17 @@ public:
             current = current->left.get();
         }
         return current->value;
+    }
+
+    std::optional<T> minimum() const
+    {
+        // Empty tree
+        if (root == nullptr)
+        {
+            return {};
+        }
+
+        return minimum(root->value);
     }
 
     std::optional<T> successor(const T &value) const
