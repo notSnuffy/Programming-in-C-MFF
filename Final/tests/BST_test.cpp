@@ -200,3 +200,49 @@ TEST(TestMinimum, WithParamValidLeafNode)
     int minimum = tree.minimum(7).value();
     ASSERT_EQ(minimum, 7);
 }
+
+TEST(TestSuccessor, NoNodeInvalid) {
+    BinarySearchTree<int> tree = create_simple_tree();
+    int successor = tree.successor(100).value_or(-12312312);
+    ASSERT_EQ(successor, -12312312);
+}
+
+TEST(TestSuccessor, EmptyTreeInvalid) {
+    BinarySearchTree<int> tree;
+    int successor = tree.successor(100).value_or(-12312312);
+    ASSERT_EQ(successor, -12312312);
+}
+
+TEST(TestSuccessor, NoSuccessorInvalid) {
+    BinarySearchTree<int> tree = create_simple_tree();
+    int succesor = tree.successor(14).value_or(-12312312);
+    ASSERT_EQ(succesor, -12312312);
+}
+
+TEST(TestSuccessor, RootNodeValid) {
+    BinarySearchTree<int> tree = create_simple_tree();
+    int successor = tree.successor(8).value();
+    ASSERT_EQ(successor, 10);
+}
+
+
+TEST(TestSuccessor, MiddleNodeValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    int successor = tree.successor(10).value();
+    ASSERT_EQ(successor, 13);
+}
+
+TEST(TestSuccessor, LeftLeafNodeValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    int successor = tree.successor(4).value();
+    ASSERT_EQ(successor, 6);
+}
+
+TEST(TestSuccessor, RightLeafNodeValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    int successor = tree.successor(7).value();
+    ASSERT_EQ(successor, 8);
+}
