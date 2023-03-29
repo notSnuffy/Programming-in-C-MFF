@@ -14,8 +14,9 @@ private:
         return compare(a, b);
     }
 
-    bool is_equal(const T &a, const T &b){
-        return !is_less_than(a, b) && !is_less_than(b, a)}
+    bool is_equal(const T &a, const T &b) const {
+        return !is_less_than(a, b) && !is_less_than(b, a);
+    }
 
     Node<T> *return_node_with_value(const T &value) const
     {
