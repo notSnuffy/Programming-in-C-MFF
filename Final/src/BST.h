@@ -1,6 +1,7 @@
 #include "Node.h"
 #include <memory>
 #include <functional>
+#include <optional>
 
 template <typename T, typename Comparator = std::less<T>>
 class BinarySearchTree
@@ -29,6 +30,19 @@ public:
         }
 
         return false;
+    }
+
+    std::optional<T> maximum() const {
+        Node<T>* current = root.get();
+
+        if(current == nullptr) {
+            return {};
+        }
+
+        while(current->right != nullptr) {
+            current = current->right.get();
+        }
+        return current->value;
     }
 
     bool insert(const T &value)
