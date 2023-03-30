@@ -156,6 +156,39 @@ public:
         return parent->value;
     }
 
+    std::optional<T> predecessor(const T &value) const
+    {
+        Node<T> *current = return_node_with_value(value);
+
+        // No node
+        if (current == nullptr)
+        {
+            return {};
+        }
+
+        // If left child exists -> predecessor is maximum from that child
+        if (current->left != nullptr)
+        {
+            return maximum(current->left->value).value();
+        }
+
+        // Predecessor is supposed to be parent of the closest ancestor that is right child
+        Node<T> *parent = current->parent;
+        while (parent != nullptr && is_equal(current->value, parent->left->value))
+        {
+            current = parent;
+            parent = parent->parent;
+        }
+
+        // No predecessor
+        if (parent == nullptr)
+        {
+            return {};
+        }
+
+        return parent->value;
+    }
+
     bool insert(const T &value)
     {
         // Insert to root
