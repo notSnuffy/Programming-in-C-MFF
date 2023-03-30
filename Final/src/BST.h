@@ -14,7 +14,8 @@ private:
         return compare(a, b);
     }
 
-    bool is_equal(const T &a, const T &b) const {
+    bool is_equal(const T &a, const T &b) const
+    {
         return !is_less_than(a, b) && !is_less_than(b, a);
     }
 
@@ -230,6 +231,39 @@ public:
         {
             parent->right = std::make_unique<Node<T>>(value);
             parent->right->parent = parent;
+        }
+
+        return true;
+    }
+
+    bool remove(const T &value)
+    {
+        Node<T> *current = return_node_with_value(value);
+
+        // No node
+        if (current == nullptr)
+        {
+            return false;
+        }
+
+        // No children
+        if (current->left == nullptr && current->right == nullptr)
+        {
+            // Deleted node is root
+            if (current->value == root->value)
+            {
+                root = nullptr;
+            }
+            // Deleted node is a left child
+            else if (current->value == current->parent->left->value)
+            {
+                current->parent->left = nullptr;
+            }
+            // Deleted node is a right child
+            else
+            {
+                current->parent->right = nullptr;
+            }
         }
 
         return true;
