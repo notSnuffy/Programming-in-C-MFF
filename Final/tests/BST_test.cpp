@@ -237,3 +237,49 @@ TEST(TestSuccessor, RightLeafNodeValid)
     int successor = tree.successor(7).value();
     ASSERT_EQ(successor, 8);
 }
+
+TEST(TestPredecessor, NoNodeInvalid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_FALSE(tree.predecessor(100).has_value());
+}
+
+TEST(TestPredecessor, EmptyTreeInvalid)
+{
+    BinarySearchTree<int> tree;
+    ASSERT_FALSE(tree.predecessor(100).has_value());
+}
+
+TEST(TestPredecessor, NoPredecessorInvalid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_FALSE(tree.predecessor(1).has_value());
+}
+
+TEST(TestPredecessor, RootNodeValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    int predecessor = tree.predecessor(8).value();
+    ASSERT_EQ(predecessor, 7);
+}
+
+TEST(TestPredecessor, MiddleNodeValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    int predecessor = tree.predecessor(10).value();
+    ASSERT_EQ(predecessor, 8);
+}
+
+TEST(TestPredecessor, LeftLeafNodeValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    int predecessor = tree.predecessor(4).value();
+    ASSERT_EQ(predecessor, 3);
+}
+
+TEST(TestPredecessor, RightLeafNodeValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    int predecessor = tree.predecessor(7).value();
+    ASSERT_EQ(predecessor, 6);
+}
