@@ -199,7 +199,7 @@ public:
 
         // Successor is supposed to be parent of the closest ancestor that is left child
         Node<T> *parent = current->parent;
-        while (parent != nullptr && is_equal(current->value, parent->right->value))
+        while (parent != nullptr && parent->right != nullptr && is_equal(current->value, parent->right->value))
         {
             current = parent;
             parent = parent->parent;
@@ -232,7 +232,7 @@ public:
 
         // Predecessor is supposed to be parent of the closest ancestor that is right child
         Node<T> *parent = current->parent;
-        while (parent != nullptr && is_equal(current->value, parent->left->value))
+        while (parent != nullptr && parent->left != nullptr && is_equal(current->value, parent->left->value))
         {
             current = parent;
             parent = parent->parent;
@@ -307,12 +307,12 @@ public:
         if (current->left == nullptr && current->right == nullptr)
         {
             // Deleted node is root
-            if (current->value == root->value)
+            if (current == root.get())
             {
                 root = nullptr;
             }
             // Deleted node is a left child
-            else if (current->value == current->parent->left->value)
+            else if (current == current->parent->left.get())
             {
                 current->parent->left = nullptr;
             }
