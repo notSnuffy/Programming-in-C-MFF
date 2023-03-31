@@ -381,6 +381,8 @@ TEST(TestRemove, NoChildrenLeftChildValid)
     ASSERT_FALSE(tree.has_value(1));
     ASSERT_FALSE(tree.predecessor(3));
     ASSERT_EQ(tree.successor(3), 4);
+    ASSERT_FALSE(tree.left_child_value(3));
+    ASSERT_EQ(tree.right_child_value(3), 6);
 
     ASSERT_TRUE(tree.has_value(8));
     ASSERT_TRUE(tree.has_value(3));
@@ -392,13 +394,15 @@ TEST(TestRemove, NoChildrenLeftChildValid)
     ASSERT_TRUE(tree.has_value(7));
 }
 
-TEST(TestRemove, NoChilderRightChildValid)
+TEST(TestRemove, NoChildernRightChildValid)
 {
     BinarySearchTree<int> tree = create_simple_tree();
     ASSERT_TRUE(tree.remove(7));
     ASSERT_FALSE(tree.has_value(7));
     ASSERT_EQ(tree.successor(6), 8);
     ASSERT_EQ(tree.predecessor(6), 4);
+    ASSERT_FALSE(tree.right_child_value(6));
+    ASSERT_EQ(tree.left_child_value(6), 4);
 
     ASSERT_TRUE(tree.has_value(8));
     ASSERT_TRUE(tree.has_value(3));
