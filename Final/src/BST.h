@@ -322,6 +322,31 @@ public:
                 current->parent->right = nullptr;
             }
         }
+        // One child
+        else if (current->left == nullptr || current->right == nullptr)
+        {
+            // Get child of deleted node
+            std::unique_ptr<Node<T>> child = current->left == nullptr ? std::move(current->right) : std::move(current->left);
+
+            // Deleted node is the root
+            if (current == root.get())
+            {
+                root = std::move(child);
+                root->parent = nullptr;
+            }
+            // Deleted node is a left child
+            else if (current == current->parent->left.get())
+            {
+                child->parent = current->parent;
+                current->parent->left = std::move(child);
+            }
+            // Deleted node is a right child
+            else
+            {
+                child->parent = current->parent;
+                current->parent->right = std::move(child);
+            }
+        }
 
         return true;
     }
