@@ -1,7 +1,8 @@
 #include "BST.h"
 #include <gtest/gtest.h>
 
-BinarySearchTree<int> create_simple_tree() {
+BinarySearchTree<int> create_simple_tree()
+{
     BinarySearchTree<int> tree;
     tree.insert(8);
     tree.insert(3);
@@ -23,7 +24,8 @@ TEST(TestInsertValid, RootNode)
     ASSERT_TRUE(tree.insert(10));
 }
 
-TEST(TestInsertValid, LeftLeafNode) {
+TEST(TestInsertValid, LeftLeafNode)
+{
     BinarySearchTree<int> tree;
     tree.insert(10);
     ASSERT_TRUE(tree.insert(8));
@@ -36,7 +38,8 @@ TEST(TestInsertValid, RightLeafNode)
     ASSERT_TRUE(tree.insert(8));
 }
 
-TEST(TestInsertValid, DeeplyNestedTree) {
+TEST(TestInsertValid, DeeplyNestedTree)
+{
     BinarySearchTree<int> tree;
     ASSERT_TRUE(tree.insert(3));
     ASSERT_TRUE(tree.insert(8));
@@ -66,7 +69,8 @@ TEST(TestInsertInvalid, DeeplyNestedTree)
     ASSERT_FALSE(tree.insert(7));
 }
 
-TEST(TestHasValueValid, DeeplyNestedTree) {
+TEST(TestHasValueValid, DeeplyNestedTree)
+{
     BinarySearchTree<int> tree;
     tree.insert(8);
     ASSERT_TRUE(tree.has_value(8));
@@ -88,7 +92,8 @@ TEST(TestHasValueValid, DeeplyNestedTree) {
     ASSERT_TRUE(tree.has_value(7));
 }
 
-TEST(TestHasValueInvalid, EmptyTree) {
+TEST(TestHasValueInvalid, EmptyTree)
+{
     BinarySearchTree<int> tree;
     ASSERT_FALSE(tree.has_value(10));
 }
@@ -106,13 +111,69 @@ TEST(TestHasValueInvalid, DeeplyNestedTree)
     ASSERT_FALSE(tree.has_value(100));
 }
 
-TEST(TestMaximum, NoParamValid) {
+TEST(TestLeftChildValue, NoNodeInvalid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_FALSE(tree.left_child_value(100).has_value());
+}
+
+TEST(TestLeftChildValue, NoLeftChildInvalid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_FALSE(tree.left_child_value(1).has_value());
+}
+
+TEST(TestLeftChildValue, LeftChildValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_EQ(tree.left_child_value(8), 3);
+}
+
+TEST(TestRightChildValue, NoNodeInvalid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_FALSE(tree.right_child_value(100).has_value());
+}
+
+TEST(TestRightChildValue, NoRightChildInvalid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_FALSE(tree.right_child_value(1).has_value());
+}
+
+TEST(TestRightChildValue, RightChildValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_EQ(tree.right_child_value(8), 10);
+}
+
+TEST(TestParentValue, NoNodeInvalid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_FALSE(tree.parent_value(100).has_value());
+}
+
+TEST(TestParentValue, NoParentInvalid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_FALSE(tree.parent_value(8).has_value());
+}
+
+TEST(TestParentValue, ParentValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_EQ(tree.parent_value(3), 8);
+}
+
+TEST(TestMaximum, NoParamValid)
+{
     BinarySearchTree<int> tree = create_simple_tree();
     int maximum = tree.maximum().value();
     ASSERT_EQ(maximum, 14);
 }
 
-TEST(TestMaximum, NoParamInvalid) {
+TEST(TestMaximum, NoParamInvalid)
+{
     BinarySearchTree<int> tree;
     ASSERT_FALSE(tree.maximum().has_value());
 }
@@ -129,7 +190,8 @@ TEST(TestMaximum, WithParamInvalidNoNode)
     ASSERT_FALSE(tree.maximum(20).has_value());
 }
 
-TEST(TestMaximum, WithParamValidRoot) {
+TEST(TestMaximum, WithParamValidRoot)
+{
     BinarySearchTree<int> tree = create_simple_tree();
     int maximum = tree.maximum(8).value();
     ASSERT_EQ(maximum, 14);
@@ -195,27 +257,30 @@ TEST(TestMinimum, WithParamValidLeafNode)
     ASSERT_EQ(minimum, 7);
 }
 
-TEST(TestSuccessor, NoNodeInvalid) {
+TEST(TestSuccessor, NoNodeInvalid)
+{
     BinarySearchTree<int> tree = create_simple_tree();
     ASSERT_FALSE(tree.successor(100).has_value());
 }
 
-TEST(TestSuccessor, EmptyTreeInvalid) {
+TEST(TestSuccessor, EmptyTreeInvalid)
+{
     BinarySearchTree<int> tree;
     ASSERT_FALSE(tree.successor(100).has_value());
 }
 
-TEST(TestSuccessor, NoSuccessorInvalid) {
+TEST(TestSuccessor, NoSuccessorInvalid)
+{
     BinarySearchTree<int> tree = create_simple_tree();
     ASSERT_FALSE(tree.successor(14).has_value());
 }
 
-TEST(TestSuccessor, RootNodeValid) {
+TEST(TestSuccessor, RootNodeValid)
+{
     BinarySearchTree<int> tree = create_simple_tree();
     int successor = tree.successor(8).value();
     ASSERT_EQ(successor, 10);
 }
-
 
 TEST(TestSuccessor, MiddleNodeValid)
 {
@@ -284,7 +349,8 @@ TEST(TestPredecessor, RightLeafNodeValid)
     ASSERT_EQ(predecessor, 6);
 }
 
-TEST(TestRemove, NoNodeInvalid) {
+TEST(TestRemove, NoNodeInvalid)
+{
     BinarySearchTree<int> tree = create_simple_tree();
     ASSERT_FALSE(tree.remove(100));
     ASSERT_TRUE(tree.has_value(8));
@@ -298,7 +364,8 @@ TEST(TestRemove, NoNodeInvalid) {
     ASSERT_TRUE(tree.has_value(7));
 }
 
-TEST(TestRemove, NoChildrenRootValid) {
+TEST(TestRemove, NoChildrenRootValid)
+{
     BinarySearchTree<int> tree;
     tree.insert(10);
     ASSERT_TRUE(tree.has_value(10));
@@ -307,7 +374,8 @@ TEST(TestRemove, NoChildrenRootValid) {
     ASSERT_FALSE(tree.maximum());
 }
 
-TEST(TestRemove, NoChildrenLeftChildValid) {
+TEST(TestRemove, NoChildrenLeftChildValid)
+{
     BinarySearchTree<int> tree = create_simple_tree();
     ASSERT_TRUE(tree.remove(1));
     ASSERT_FALSE(tree.has_value(1));
@@ -324,7 +392,8 @@ TEST(TestRemove, NoChildrenLeftChildValid) {
     ASSERT_TRUE(tree.has_value(7));
 }
 
-TEST(TestRemove, NoChilderRightChildValid) {
+TEST(TestRemove, NoChilderRightChildValid)
+{
     BinarySearchTree<int> tree = create_simple_tree();
     ASSERT_TRUE(tree.remove(7));
     ASSERT_FALSE(tree.has_value(7));
