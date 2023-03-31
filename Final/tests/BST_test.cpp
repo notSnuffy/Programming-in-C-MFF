@@ -413,3 +413,162 @@ TEST(TestRemove, NoChildernRightChildValid)
     ASSERT_TRUE(tree.has_value(4));
     ASSERT_TRUE(tree.has_value(1));
 }
+
+TEST(TestRemove, OneLeftChildRootValid)
+{
+    BinarySearchTree<int> tree;
+    tree.insert(8);
+    tree.insert(3);
+    tree.insert(1);
+    tree.insert(6);
+    tree.insert(4);
+    tree.insert(7);
+    ASSERT_EQ(tree.parent_value(3), 8);
+
+    ASSERT_TRUE(tree.remove(8));
+    ASSERT_FALSE(tree.has_value(8));
+    ASSERT_EQ(tree.maximum(), 7);
+    ASSERT_EQ(tree.successor(3), 4);
+    ASSERT_EQ(tree.predecessor(3), 1);
+    ASSERT_EQ(tree.left_child_value(3), 1);
+    ASSERT_EQ(tree.right_child_value(3), 6);
+    ASSERT_FALSE(tree.parent_value(3).has_value());
+
+    ASSERT_TRUE(tree.has_value(3));
+    ASSERT_TRUE(tree.has_value(6));
+    ASSERT_TRUE(tree.has_value(7));
+    ASSERT_TRUE(tree.has_value(4));
+    ASSERT_TRUE(tree.has_value(1));
+}
+
+TEST(TestRemove, OneRightChildRootValid)
+{
+    BinarySearchTree<int> tree;
+    tree.insert(8);
+    tree.insert(10);
+    tree.insert(14);
+    tree.insert(13);
+    ASSERT_EQ(tree.parent_value(10), 8);
+
+    ASSERT_TRUE(tree.remove(8));
+    ASSERT_FALSE(tree.has_value(8));
+    ASSERT_EQ(tree.minimum(), 10);
+    ASSERT_EQ(tree.successor(10), 13);
+    ASSERT_FALSE(tree.predecessor(10));
+    ASSERT_FALSE(tree.left_child_value(10).has_value());
+    ASSERT_EQ(tree.right_child_value(10), 14);
+    ASSERT_FALSE(tree.parent_value(10).has_value());
+
+    ASSERT_TRUE(tree.has_value(10));
+    ASSERT_TRUE(tree.has_value(13));
+    ASSERT_TRUE(tree.has_value(14));
+}
+
+TEST(TestRemove, OneLeftChildAndDeletedIsLeftChildValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    tree.insert(0);
+    ASSERT_TRUE(tree.remove(1));
+    ASSERT_FALSE(tree.has_value(1));
+    ASSERT_EQ(tree.minimum(), 0);
+    ASSERT_EQ(tree.successor(3), 4);
+    ASSERT_EQ(tree.predecessor(3), 0);
+    ASSERT_FALSE(tree.predecessor(0));
+
+    ASSERT_EQ(tree.parent_value(0), 3);
+    ASSERT_FALSE(tree.right_child_value(0));
+    ASSERT_FALSE(tree.left_child_value(0));
+    ASSERT_EQ(tree.left_child_value(3), 0);
+    ASSERT_EQ(tree.right_child_value(3), 6);
+    ASSERT_EQ(tree.parent_value(3), 8);
+
+    ASSERT_TRUE(tree.has_value(0));
+    ASSERT_TRUE(tree.has_value(3));
+    ASSERT_TRUE(tree.has_value(4));
+    ASSERT_TRUE(tree.has_value(6));
+    ASSERT_TRUE(tree.has_value(7));
+    ASSERT_TRUE(tree.has_value(8));
+    ASSERT_TRUE(tree.has_value(10));
+    ASSERT_TRUE(tree.has_value(13));
+    ASSERT_TRUE(tree.has_value(14));
+}
+
+TEST(TestRemove, OneLeftChildAndDeletedIsRightChildValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+
+    ASSERT_EQ(tree.parent_value(13), 14);
+
+    ASSERT_TRUE(tree.remove(14));
+    ASSERT_FALSE(tree.has_value(14));
+    ASSERT_EQ(tree.maximum(), 13);
+    ASSERT_FALSE(tree.successor(13).has_value());
+    ASSERT_EQ(tree.predecessor(13), 10);
+
+    ASSERT_EQ(tree.parent_value(13), 10);
+    ASSERT_FALSE(tree.right_child_value(13));
+    ASSERT_FALSE(tree.left_child_value(13));
+    ASSERT_EQ(tree.right_child_value(10), 13);
+    ASSERT_FALSE(tree.left_child_value(10).has_value());
+    ASSERT_EQ(tree.parent_value(10), 8);
+
+    ASSERT_TRUE(tree.has_value(3));
+    ASSERT_TRUE(tree.has_value(4));
+    ASSERT_TRUE(tree.has_value(6));
+    ASSERT_TRUE(tree.has_value(7));
+    ASSERT_TRUE(tree.has_value(8));
+    ASSERT_TRUE(tree.has_value(10));
+    ASSERT_TRUE(tree.has_value(13));
+}
+
+TEST(TestRemove, OneRightChildAndDeletedIsLeftChildValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    tree.remove(1);
+
+    ASSERT_EQ(tree.parent_value(6), 3);
+
+    ASSERT_TRUE(tree.remove(3));
+    ASSERT_FALSE(tree.has_value(3));
+    ASSERT_EQ(tree.successor(4), 6);
+    ASSERT_FALSE(tree.predecessor(4).has_value());
+
+    ASSERT_EQ(tree.parent_value(6), 8);
+    ASSERT_EQ(tree.left_child_value(6), 4);
+    ASSERT_EQ(tree.right_child_value(6), 7);
+    ASSERT_EQ(tree.right_child_value(8), 10);
+    ASSERT_EQ(tree.left_child_value(8), 6);
+
+    ASSERT_TRUE(tree.has_value(4));
+    ASSERT_TRUE(tree.has_value(6));
+    ASSERT_TRUE(tree.has_value(7));
+    ASSERT_TRUE(tree.has_value(8));
+    ASSERT_TRUE(tree.has_value(10));
+    ASSERT_TRUE(tree.has_value(13));
+}
+
+TEST(TestRemove, OneRightChildAndDeletedIsRightChildValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+
+    ASSERT_EQ(tree.parent_value(14), 10);
+
+    ASSERT_TRUE(tree.remove(10));
+    ASSERT_FALSE(tree.has_value(10));
+    ASSERT_EQ(tree.successor(8), 13);
+    ASSERT_EQ(tree.predecessor(13), 8);
+
+    ASSERT_EQ(tree.parent_value(14), 8);
+    ASSERT_EQ(tree.left_child_value(14), 13);
+    ASSERT_FALSE(tree.right_child_value(14).has_value());
+    ASSERT_EQ(tree.right_child_value(8), 14);
+    ASSERT_EQ(tree.left_child_value(8), 3);
+
+    ASSERT_TRUE(tree.has_value(1));
+    ASSERT_TRUE(tree.has_value(4));
+    ASSERT_TRUE(tree.has_value(6));
+    ASSERT_TRUE(tree.has_value(7));
+    ASSERT_TRUE(tree.has_value(8));
+    ASSERT_TRUE(tree.has_value(13));
+    ASSERT_TRUE(tree.has_value(14));
+}
