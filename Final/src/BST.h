@@ -66,6 +66,63 @@ public:
         return false;
     }
 
+    std::optional<T> left_child_value(const T &value) const
+    {
+        Node<T> *current = return_node_with_value(value);
+
+        // No node with value
+        if (current == nullptr)
+        {
+            return {};
+        }
+
+        // No left child
+        if (current->left == nullptr)
+        {
+            return {};
+        }
+
+        return current->left->value;
+    }
+
+    std::optional<T> right_child_value(const T &value) const
+    {
+        Node<T> *current = return_node_with_value(value);
+
+        // No node with value
+        if (current == nullptr)
+        {
+            return {};
+        }
+
+        // No right child
+        if (current->right == nullptr)
+        {
+            return {};
+        }
+
+        return current->right->value;
+    }
+
+    std::optional<T> parent_value(const T &value) const
+    {
+        Node<T> *current = return_node_with_value(value);
+
+        // No node with value
+        if (current == nullptr)
+        {
+            return {};
+        }
+
+        // No parent
+        if (current->parent == nullptr)
+        {
+            return {};
+        }
+
+        return current->parent->value;
+    }
+
     std::optional<T> maximum(const T &value) const
     {
         Node<T> *current = return_node_with_value(value);
