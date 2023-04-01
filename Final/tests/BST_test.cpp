@@ -394,7 +394,7 @@ TEST(TestRemove, NoChildrenLeftChildValid)
     ASSERT_TRUE(tree.has_value(7));
 }
 
-TEST(TestRemove, NoChildernRightChildValid)
+TEST(TestRemove, NoChildrenRightChildValid)
 {
     BinarySearchTree<int> tree = create_simple_tree();
     ASSERT_TRUE(tree.remove(7));
@@ -571,4 +571,81 @@ TEST(TestRemove, OneRightChildAndDeletedIsRightChildValid)
     ASSERT_TRUE(tree.has_value(8));
     ASSERT_TRUE(tree.has_value(13));
     ASSERT_TRUE(tree.has_value(14));
+}
+
+TEST(TestRemove, BothChildrenRootValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_TRUE(tree.remove(8));
+    ASSERT_FALSE(tree.has_value(8));
+    ASSERT_FALSE(tree.parent_value(10).has_value());
+    ASSERT_EQ(tree.left_child_value(10), 3);
+    ASSERT_EQ(tree.right_child_value(10), 14);
+    ASSERT_EQ(tree.parent_value(3), 10);
+    ASSERT_EQ(tree.left_child_value(3), 1);
+    ASSERT_EQ(tree.right_child_value(3), 6);
+    ASSERT_FALSE(tree.left_child_value(1).has_value());
+    ASSERT_FALSE(tree.right_child_value(1).has_value());
+    ASSERT_EQ(tree.parent_value(1), 3);
+    ASSERT_EQ(tree.left_child_value(6), 4);
+    ASSERT_EQ(tree.right_child_value(6), 7);
+    ASSERT_EQ(tree.parent_value(6), 3);
+    ASSERT_EQ(tree.parent_value(14), 10);
+    ASSERT_EQ(tree.left_child_value(14), 13);
+    ASSERT_FALSE(tree.right_child_value(14).has_value());
+    ASSERT_EQ(tree.parent_value(13), 14);
+    ASSERT_FALSE(tree.left_child_value(13).has_value());
+    ASSERT_FALSE(tree.right_child_value(13).has_value());
+}
+
+TEST(TestRemove, BothChildrenMiddleNodeNestedSuccessorValid)
+{
+    BinarySearchTree<int> tree;
+
+    tree.insert(8);
+    tree.insert(3);
+    tree.insert(10);
+    tree.insert(9);
+    tree.insert(14);
+    tree.insert(13);
+    tree.insert(1);
+    tree.insert(6);
+    tree.insert(4);
+    tree.insert(7);
+
+    ASSERT_TRUE(tree.remove(10));
+    ASSERT_FALSE(tree.has_value(10));
+    ASSERT_EQ(tree.parent_value(9), 13);
+    ASSERT_FALSE(tree.left_child_value(9).has_value());
+    ASSERT_FALSE(tree.right_child_value(9).has_value());
+    ASSERT_EQ(tree.parent_value(3), 8);
+    ASSERT_EQ(tree.left_child_value(3), 1);
+    ASSERT_EQ(tree.right_child_value(3), 6);
+    ASSERT_FALSE(tree.left_child_value(1).has_value());
+    ASSERT_FALSE(tree.right_child_value(1).has_value());
+    ASSERT_EQ(tree.parent_value(1), 3);
+    ASSERT_EQ(tree.left_child_value(6), 4);
+    ASSERT_EQ(tree.right_child_value(6), 7);
+    ASSERT_EQ(tree.parent_value(6), 3);
+    ASSERT_EQ(tree.parent_value(14), 13);
+    ASSERT_FALSE(tree.left_child_value(14).has_value());
+    ASSERT_FALSE(tree.right_child_value(14).has_value());
+    ASSERT_FALSE(tree.parent_value(8).has_value());
+    ASSERT_EQ(tree.left_child_value(8), 3);
+    ASSERT_EQ(tree.right_child_value(8), 13);
+}
+
+TEST(TestRemove, DeleteWholeTreeValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+    ASSERT_TRUE(tree.remove(8));
+    ASSERT_TRUE(tree.remove(3));
+    ASSERT_TRUE(tree.remove(10));
+    ASSERT_TRUE(tree.remove(14));
+    ASSERT_TRUE(tree.remove(13));
+    ASSERT_TRUE(tree.remove(1));
+    ASSERT_TRUE(tree.remove(6));
+    ASSERT_TRUE(tree.remove(4));
+    ASSERT_TRUE(tree.remove(7));
+    ASSERT_FALSE(tree.maximum());
 }
