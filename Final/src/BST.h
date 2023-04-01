@@ -347,6 +347,21 @@ public:
                 current->parent->right = std::move(child);
             }
         }
+        // Two children
+        else
+        {
+            // Find successor of current -> has to be minimum in right subtree since current has both children
+            Node<T> *successor = current->right.get();
+            while (successor->left != nullptr)
+            {
+                successor = successor->left.get();
+            }
+
+            T newValue = successor->value;
+            // We replace value of node with successor so we need to delete successor
+            remove(successor->value);
+            current->value = newValue;
+        }
 
         return true;
     }
