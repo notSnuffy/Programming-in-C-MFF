@@ -1,4 +1,4 @@
-#include "BST.h"
+#include <BST.h>
 #include <gtest/gtest.h>
 
 BinarySearchTree<int> create_simple_tree()

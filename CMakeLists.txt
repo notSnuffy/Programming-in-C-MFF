@@ -16,3 +16,4 @@ include(GoogleTest)
 
 enable_testing()
 add_subdirectory(labs)
+add_subdirectory(Final)
