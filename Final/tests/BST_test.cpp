@@ -745,7 +745,6 @@ TEST(TestIterator, IteratorCopyValid)
     ASSERT_NE(*it, *it2);
 }
 
-//TEST iterator find
 TEST(TestIterator, IteratorFindValid)
 {
     BinarySearchTree<int> tree = create_simple_tree();
@@ -764,4 +763,193 @@ TEST(TestIterator, IteratorFindValid)
     ASSERT_EQ(*it, 1);
     ++it;
     ASSERT_EQ(*it, 3);
+}
+
+struct Point
+{
+    int x;
+    int y;
+
+    // enough for binary search tree
+    bool operator<(const Point &other) const
+    {
+        return x < other.x || (x == other.x && y < other.y);
+    }
+
+    // required for assertions
+    bool operator==(const Point &other) const
+    {
+        return x == other.x && y == other.y;
+    }
+
+    bool operator!=(const Point &other) const
+    {
+        return !(*this == other);
+    }
+};
+
+TEST(TestCustomType, InsertValid)
+{
+    BinarySearchTree<Point> tree;
+    tree.insert({5, 6});
+    tree.insert({7, 8});
+    tree.insert({1, 2});
+    tree.insert({9, 10});
+    tree.insert({3, 4});
+    tree.insert({11, 12});
+
+    ASSERT_LT(tree.minimum(), (Point{3, 4}));
+    ASSERT_EQ(tree.minimum(), (Point{1, 2}));
+    ASSERT_EQ(tree.maximum(), (Point{11, 12}));
+    ASSERT_EQ(tree.successor({1, 2}), (Point{3, 4}));
+    ASSERT_EQ(tree.successor({3, 4}), (Point{5, 6}));
+    ASSERT_EQ(tree.successor({5, 6}), (Point{7, 8}));
+    ASSERT_EQ(tree.successor({7, 8}), (Point{9, 10}));
+    ASSERT_EQ(tree.successor({9, 10}), (Point{11, 12}));
+    ASSERT_FALSE(tree.successor({11, 12}).has_value());
+    ASSERT_EQ(tree.predecessor({11, 12}), (Point{9, 10}));
+    ASSERT_EQ(tree.predecessor({9, 10}), (Point{7, 8}));
+    ASSERT_EQ(tree.predecessor({7, 8}), (Point{5, 6}));
+    ASSERT_EQ(tree.predecessor({5, 6}), (Point{3, 4}));
+    ASSERT_EQ(tree.predecessor({3, 4}), (Point{1, 2}));
+    ASSERT_FALSE(tree.predecessor({1, 2}).has_value());
+
+    ASSERT_EQ(tree.left_child_value({5, 6}), (Point{1, 2}));
+    ASSERT_EQ(tree.right_child_value({5, 6}), (Point{7, 8}));
+    ASSERT_FALSE(tree.parent_value({5, 6}).has_value());
+    ASSERT_FALSE(tree.left_child_value({1, 2}).has_value());
+    ASSERT_EQ(tree.right_child_value({1, 2}), (Point{3, 4}));
+    ASSERT_EQ(tree.parent_value({1, 2}), (Point{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({3, 4}).has_value());
+    ASSERT_FALSE(tree.right_child_value({3, 4}).has_value());
+    ASSERT_EQ(tree.parent_value({3, 4}), (Point{1, 2}));
+    ASSERT_FALSE(tree.left_child_value({7, 8}).has_value());
+    ASSERT_EQ(tree.right_child_value({7, 8}), (Point{9, 10}));
+    ASSERT_EQ(tree.parent_value({7, 8}), (Point{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({9, 10}).has_value());
+    ASSERT_EQ(tree.right_child_value({9, 10}), (Point{11, 12}));
+    ASSERT_EQ(tree.parent_value({9, 10}), (Point{7, 8}));
+    ASSERT_FALSE(tree.left_child_value({11, 12}).has_value());
+    ASSERT_FALSE(tree.right_child_value({11, 12}).has_value());
+    ASSERT_EQ(tree.parent_value({11, 12}), (Point{9, 10}));
+}
+
+TEST(TestCustomType, IteratorValid)
+{
+    BinarySearchTree<Point> tree;
+    tree.insert({5, 6});
+    tree.insert({7, 8});
+    tree.insert({1, 2});
+    tree.insert({9, 10});
+    tree.insert({3, 4});
+    tree.insert({11, 12});
+
+    std::vector<Point> expected = {{1, 2}, {3, 4}, {5, 6}, {7, 8}, {9, 10}, {11, 12}};
+    std::vector<Point> actual;
+
+    for (auto it = tree.begin(); it != tree.end(); ++it)
+    {
+        actual.push_back(*it);
+    }
+
+    ASSERT_EQ(expected, actual);
+}
+
+struct Point2
+{
+    int x;
+    int y;
+
+    bool operator==(const Point2 &other) const
+    {
+        return x == other.x && y == other.y;
+    }
+
+    bool operator!=(const Point2 &other) const
+    {
+        return !(*this == other);
+    }
+};
+
+struct PointCompare
+{
+    bool operator()(const Point2 &a, const Point2 &b) const
+    {
+        return a.x < b.x || (a.x == b.x && a.y < b.y);
+    }
+};
+
+TEST(TestCustomType, CustomComparatorValid)
+{
+    BinarySearchTree<Point2, PointCompare> tree;
+    tree.insert({5, 6});
+    tree.insert({7, 8});
+    tree.insert({1, 2});
+    tree.insert({9, 10});
+    tree.insert({3, 4});
+    tree.insert({11, 12});
+
+    ASSERT_EQ(tree.minimum(), (Point2{1, 2}));
+    ASSERT_EQ(tree.maximum(), (Point2{11, 12}));
+    ASSERT_EQ(tree.successor({1, 2}), (Point2{3, 4}));
+    ASSERT_EQ(tree.successor({3, 4}), (Point2{5, 6}));
+    ASSERT_EQ(tree.successor({5, 6}), (Point2{7, 8}));
+    ASSERT_EQ(tree.successor({7, 8}), (Point2{9, 10}));
+    ASSERT_EQ(tree.successor({9, 10}), (Point2{11, 12}));
+    ASSERT_FALSE(tree.successor({11, 12}).has_value());
+    ASSERT_EQ(tree.predecessor({11, 12}), (Point2{9, 10}));
+    ASSERT_EQ(tree.predecessor({9, 10}), (Point2{7, 8}));
+    ASSERT_EQ(tree.predecessor({7, 8}), (Point2{5, 6}));
+    ASSERT_EQ(tree.predecessor({5, 6}), (Point2{3, 4}));
+    ASSERT_EQ(tree.predecessor({3, 4}), (Point2{1, 2}));
+    ASSERT_FALSE(tree.predecessor({1, 2}).has_value());
+
+    ASSERT_EQ(tree.left_child_value({5, 6}), (Point2{1, 2}));
+    ASSERT_EQ(tree.right_child_value({5, 6}), (Point2{7, 8}));
+    ASSERT_FALSE(tree.parent_value({5, 6}).has_value());
+    ASSERT_FALSE(tree.left_child_value({1, 2}).has_value());
+    ASSERT_EQ(tree.right_child_value({1, 2}), (Point2{3, 4}));
+    ASSERT_EQ(tree.parent_value({1, 2}), (Point2{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({3, 4}).has_value());
+    ASSERT_FALSE(tree.right_child_value({3, 4}).has_value());
+    ASSERT_EQ(tree.parent_value({3, 4}), (Point2{1, 2}));
+    ASSERT_FALSE(tree.left_child_value({7, 8}).has_value());
+    ASSERT_EQ(tree.right_child_value({7, 8}), (Point2{9, 10}));
+    ASSERT_EQ(tree.parent_value({7, 8}), (Point2{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({9, 10}).has_value());
+    ASSERT_EQ(tree.right_child_value({9, 10}), (Point2{11, 12}));
+    ASSERT_EQ(tree.parent_value({9, 10}), (Point2{7, 8}));
+    ASSERT_FALSE(tree.left_child_value({11, 12}).has_value());
+    ASSERT_FALSE(tree.right_child_value({11, 12}).has_value());
+    ASSERT_EQ(tree.parent_value({11, 12}), (Point2{9, 10}));
+}
+
+TEST(TestCustomType, DeleteValid)
+{
+    BinarySearchTree<Point> tree;
+    tree.insert({5, 6});
+    tree.insert({7, 8});
+    tree.insert({1, 2});
+    tree.insert({9, 10});
+    tree.insert({3, 4});
+    tree.insert({11, 12});
+
+    ASSERT_TRUE(tree.remove({1, 2}));
+    ASSERT_FALSE(tree.has_value({1, 2}));
+
+    ASSERT_EQ(tree.left_child_value({5, 6}), (Point{3, 4}));
+    ASSERT_EQ(tree.right_child_value({5, 6}), (Point{7, 8}));
+    ASSERT_FALSE(tree.parent_value({5, 6}).has_value());
+    ASSERT_FALSE(tree.left_child_value({3, 4}).has_value());
+    ASSERT_FALSE(tree.right_child_value({3, 4}).has_value());
+    ASSERT_EQ(tree.parent_value({3, 4}), (Point{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({7, 8}).has_value());
+    ASSERT_EQ(tree.right_child_value({7, 8}), (Point{9, 10}));
+    ASSERT_EQ(tree.parent_value({7, 8}), (Point{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({9, 10}).has_value());
+    ASSERT_EQ(tree.right_child_value({9, 10}), (Point{11, 12}));
+    ASSERT_EQ(tree.parent_value({9, 10}), (Point{7, 8}));
+    ASSERT_FALSE(tree.left_child_value({11, 12}).has_value());
+    ASSERT_FALSE(tree.right_child_value({11, 12}).has_value());
+    ASSERT_EQ(tree.parent_value({11, 12}), (Point{9, 10}));
 }
