@@ -47,6 +47,46 @@ private:
         return nullptr;
     }
 
+    int height(const AVLNode<T> *node) const
+    {
+        if (node == nullptr)
+        {
+            return 0;
+        }
+        return node->height;
+    }
+
+    void update_height(AVLNode<T> *node)
+    {
+        node->height = std::max(height(node->left.get()), height(node->right.get())) + 1;
+    }
+
+    std::unique_ptr<AVLNode<T>> left_rotate(AVLNode<T> *node)
+    {
+        std::unique_ptr<AVLNode<T>> right_child = std::move(node->right);
+        node->right = std::move(right_child->left);
+        node->parent = right_child.get();
+
+        right_child->parent = node->parent;
+        right_child->left = std::move(node);
+        update_height(node);
+        update_height(right_child);
+        return right_child;
+    }
+
+    std::unique_ptr<AVLNode<T>> right_rotate(AVLNode<T> *node)
+    {
+        std::unique_ptr<AVLNode<T>> left_child = std::move(node->left);
+        node->left = std::move(left_child->right);
+        node->parent = left_child.get();
+
+        left_child->parent = node->parent;
+        left_child->right = std::move(node);
+        update_height(node);
+        update_height(left_child);
+        return left_child;
+    }
+
 public:
     struct Iterator
     {
