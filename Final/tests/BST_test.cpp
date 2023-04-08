@@ -1,5 +1,7 @@
 #include <BST.h>
 #include <gtest/gtest.h>
+#include <vector>
+#include <numeric>
 
 BinarySearchTree<int> create_simple_tree()
 {
@@ -648,4 +650,118 @@ TEST(TestRemove, DeleteWholeTreeValid)
     ASSERT_TRUE(tree.remove(4));
     ASSERT_TRUE(tree.remove(7));
     ASSERT_FALSE(tree.maximum());
+}
+
+TEST(TestIterator, IteratorForwardValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+
+    std::vector<int> expected = {1, 3, 4, 6, 7, 8, 10, 13, 14};
+    std::vector<int> actual;
+
+    for (auto it = tree.begin(); it != tree.end(); ++it)
+    {
+        actual.push_back(*it);
+    }
+
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(TestIterator, IteratorBackwardValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+
+    std::vector<int> expected = {14, 13, 10, 8, 7, 6, 4, 3, 1};
+    std::vector<int> actual;
+
+    for (auto it = tree.rbegin(); it != tree.rend(); ++it)
+    {
+        actual.push_back(*it);
+    }
+
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(TestIterator, IteratorForwardBackwardValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+
+    std::vector<int> expected = {1, 3, 4, 6, 7, 8, 10, 13, 14, 13, 10, 8, 7, 6, 4, 3, 1};
+    std::vector<int> actual;
+
+    auto it = tree.begin();
+    for (; *it != 14; ++it)
+    {
+        actual.push_back(*it);
+    }
+
+    for (; it != tree.begin(); --it)
+    {
+        actual.push_back(*it);
+    }
+    actual.push_back(*it);
+
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(TestIterator, IteratorAccumulateValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+
+    int expected = 0;
+    for (auto it = tree.begin(); it != tree.end(); ++it)
+    {
+        expected += *it;
+    }
+
+    int actual = std::accumulate(tree.begin(), tree.end(), 0);
+
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(TestIterator, RangeBasedForLoopValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+
+    std::vector<int> expected = {1, 3, 4, 6, 7, 8, 10, 13, 14};
+    std::vector<int> actual;
+
+    for (auto value : tree)
+    {
+        actual.push_back(value);
+    }
+
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(TestIterator, IteratorCopyValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+
+    auto it = tree.begin();
+    auto it2 = it;
+    ASSERT_EQ(*it, *it2);
+    ++it;
+    ASSERT_NE(*it, *it2);
+}
+
+//TEST iterator find
+TEST(TestIterator, IteratorFindValid)
+{
+    BinarySearchTree<int> tree = create_simple_tree();
+
+    auto it = tree.find(8);
+    ASSERT_EQ(*it, 8);
+    ++it;
+    ASSERT_EQ(*it, 10);
+    --it;
+    ASSERT_EQ(*it, 8);
+    it = tree.find(14);
+    ASSERT_EQ(*it, 14);
+    --it;
+    ASSERT_EQ(*it, 13);
+    it = tree.find(1);
+    ASSERT_EQ(*it, 1);
+    ++it;
+    ASSERT_EQ(*it, 3);
 }
