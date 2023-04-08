@@ -43,6 +43,138 @@ private:
     }
 
 public:
+    struct Iterator
+    {
+    public:
+        using iterator_category = std::bidirectional_iterator_tag;
+        // we return only value not node and const so it doesn't break the tree invariant
+        using value_type = T;
+        using reference = const T &;
+        using pointer = const T *;
+        using difference_type = std::ptrdiff_t;
+
+        Iterator() = default;
+
+        Iterator(Node<T> *node) : current(node) {}
+
+        bool operator==(const Iterator &other) const
+        {
+            return current == other.current;
+        }
+
+        bool operator!=(const Iterator &other) const
+        {
+            return !(*this == other);
+        }
+
+        reference operator*() const
+        {
+            return current->value;
+        }
+
+        pointer operator->() const
+        {
+            return &current->value;
+        }
+
+        virtual Iterator &operator++()
+        {
+            // No node
+            if (current == nullptr)
+            {
+                return *this;
+            }
+
+            // Get minimum of right subtree
+            if (current->right != nullptr)
+            {
+                current = current->right.get();
+                while (current->left != nullptr)
+                {
+                    current = current->left.get();
+                }
+            }
+            // Successor is supposed to be parent of the closest ancestor that is left child
+            else
+            {
+                Node<T> *parent = current->parent;
+                while (parent != nullptr && current == parent->right.get())
+                {
+                    current = parent;
+                    parent = parent->parent;
+                }
+                current = parent;
+            }
+            return *this;
+        }
+
+        Iterator operator++(int)
+        {
+            Iterator copy = *this;
+            ++(*this);
+            return copy;
+        }
+
+        virtual Iterator &operator--()
+        {
+            if (current == nullptr)
+            {
+                return *this;
+            }
+
+            // Get maximum of left subtree
+            if (current->left != nullptr)
+            {
+                current = current->left.get();
+                while (current->right != nullptr)
+                {
+                    current = current->right.get();
+                }
+            }
+            // Successor is supposed to be parent of the closest ancestor that is right child
+            else
+            {
+                Node<T> *parent = current->parent;
+                while (parent != nullptr && current == parent->left.get())
+                {
+                    current = parent;
+                    parent = parent->parent;
+                }
+                current = parent;
+            }
+            return *this;
+        }
+
+        Iterator operator--(int)
+        {
+            Iterator copy = *this;
+            --(*this);
+            return copy;
+        }
+
+    private:
+        Node<T> *current = nullptr;
+    };
+
+    struct ReverseIterator : Iterator
+    {
+        ReverseIterator() = default;
+
+        ReverseIterator(Node<T> *node) : Iterator(node) {}
+
+        ReverseIterator &operator++()
+        {
+            Iterator::operator--();
+            return *this;
+        }
+
+        ReverseIterator &operator--()
+        {
+            Iterator::operator++();
+            return *this;
+        }
+    };
+
     bool has_value(const T &value) const
     {
         Node<T> *current = root.get();
@@ -364,5 +496,50 @@ public:
         }
 
         return true;
+    }
+
+    Iterator begin() const
+    {
+        Node<T> *current = root.get();
+        if (current == nullptr)
+        {
+            return Iterator();
+        }
+
+        current = return_node_with_value(minimum().value());
+        return Iterator(current);
+    }
+
+    Iterator end() const
+    {
+        return Iterator();
+    }
+
+    ReverseIterator rbegin() const
+    {
+        Node<T> *current = root.get();
+        if (current == nullptr)
+        {
+            return ReverseIterator();
+        }
+
+        current = return_node_with_value(maximum().value());
+        return ReverseIterator(current);
+    }
+
+    ReverseIterator rend() const
+    {
+        return ReverseIterator();
+    }
+
+    Iterator find(const T &value) const
+    {
+        Node<T> *current = return_node_with_value(value);
+        if (current == nullptr)
+        {
+            return Iterator();
+        }
+
+        return Iterator(current);
     }
 };
