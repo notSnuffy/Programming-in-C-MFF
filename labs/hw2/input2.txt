@@ -1,0 +1,12 @@
+2 Fish
+1 Box
+7 Cat
+2 Dog
+1 Apple
+2 Box
+2 Axe
+7 Box
+2 Answer
+7 Apple
+6 Year
+2 Goat
