@@ -106,6 +106,40 @@ private:
         return height(node->left.get()) - height(node->right.get());
     }
 
+    std::unique_ptr<Node<T>> rebalance(std::unique_ptr<Node<T>> node, const T& value) {
+        update_height(node.get());
+
+        int balance = balance_factor(node.get());
+
+        // Left Left Case
+        if (balance > 1 && is_less_than(value, node->left->value))
+        {
+            return std::unique_ptr<Node<T>>(right_rotate(std::move(node)));
+        }
+
+        // Right Right Case
+        if (balance < -1 && is_less_than(node->right->value, value))
+        {
+            return std::unique_ptr<Node<T>>(left_rotate(std::move(node)));
+        }
+
+        // Left Right Case
+        if (balance > 1 && is_less_than(node->left->value, value))
+        {
+            node->left = std::unique_ptr<Node<T>>(left_rotate(std::move(node->left)));
+            return std::unique_ptr<Node<T>>(right_rotate(std::move(node)));
+        }
+
+        // Right Left Case
+        if (balance < -1 && is_less_than(value, node->right->value))
+        {
+            node->right = std::unique_ptr<Node<T>>(right_rotate(std::move(node->right)));
+            return std::unique_ptr<Node<T>>(left_rotate(std::move(node)));
+        }
+
+        return node;
+    }
+
     std::optional<std::unique_ptr<Node<T>>> _insert(std::unique_ptr<Node<T>> node, const T &value)
     {
         // Leaf node
@@ -142,37 +176,7 @@ private:
             return {};
         }
 
-        update_height(node.get());
-
-        int balance = balance_factor(node.get());
-
-        // Left Left Case
-        if (balance > 1 && is_less_than(value, node->left->value))
-        {
-            return std::unique_ptr<Node<T>>(right_rotate(std::move(node)));
-        }
-
-        // Right Right Case
-        if (balance < -1 && is_less_than(node->right->value, value))
-        {
-            return std::unique_ptr<Node<T>>(left_rotate(std::move(node)));
-        }
-
-        // Left Right Case
-        if (balance > 1 && is_less_than(node->left->value, value))
-        {
-            node->left = std::unique_ptr<Node<T>>(left_rotate(std::move(node->left)));
-            return std::unique_ptr<Node<T>>(right_rotate(std::move(node)));
-        }
-
-        // Right Left Case
-        if (balance < -1 && is_less_than(value, node->right->value))
-        {
-            node->right = std::unique_ptr<Node<T>>(right_rotate(std::move(node->right)));
-            return std::unique_ptr<Node<T>>(left_rotate(std::move(node)));
-        }
-
-        return node;
+        return rebalance(std::move(node), value);
     }
 
 public:
