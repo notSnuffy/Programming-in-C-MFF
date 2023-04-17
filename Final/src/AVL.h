@@ -97,7 +97,7 @@ private:
         return left_child;
     }
 
-    int balance_factor(const Node<T>* node) const
+    int balance_factor(const Node<T> *node) const
     {
         if (node == nullptr)
         {
@@ -106,32 +106,33 @@ private:
         return height(node->left.get()) - height(node->right.get());
     }
 
-    std::unique_ptr<Node<T>> rebalance(std::unique_ptr<Node<T>> node, const T& value) {
+    std::unique_ptr<Node<T>> rebalance(std::unique_ptr<Node<T>> node)
+    {
         update_height(node.get());
 
         int balance = balance_factor(node.get());
 
         // Left Left Case
-        if (balance > 1 && is_less_than(value, node->left->value))
+        if (balance > 1 && balance_factor(node->left.get()) >= 0)
         {
             return std::unique_ptr<Node<T>>(right_rotate(std::move(node)));
         }
 
         // Right Right Case
-        if (balance < -1 && is_less_than(node->right->value, value))
+        if (balance < -1 && balance_factor(node->right.get()) <= 0)
         {
             return std::unique_ptr<Node<T>>(left_rotate(std::move(node)));
         }
 
         // Left Right Case
-        if (balance > 1 && is_less_than(node->left->value, value))
+        if (balance > 1 && balance_factor(node->left.get()) < 0)
         {
             node->left = std::unique_ptr<Node<T>>(left_rotate(std::move(node->left)));
             return std::unique_ptr<Node<T>>(right_rotate(std::move(node)));
         }
 
         // Right Left Case
-        if (balance < -1 && is_less_than(value, node->right->value))
+        if (balance < -1 && balance_factor(node->right.get()) > 0)
         {
             node->right = std::unique_ptr<Node<T>>(right_rotate(std::move(node->right)));
             return std::unique_ptr<Node<T>>(left_rotate(std::move(node)));
@@ -176,7 +177,92 @@ private:
             return {};
         }
 
-        return rebalance(std::move(node), value);
+        return rebalance(std::move(node));
+    }
+
+    std::optional<std::unique_ptr<Node<T>>> _remove(std::unique_ptr<Node<T>> node, const T &value)
+    {
+        // No node
+        if (node == nullptr)
+        {
+            return {};
+        }
+
+        // Left child
+        if (is_less_than(value, node->value))
+        {
+            std::optional<std::unique_ptr<Node<T>>> new_node = _remove(std::move(node->left), value);
+            if (!new_node.has_value())
+            {
+                return {};
+            }
+            if (new_node.value() != nullptr)
+            {
+                new_node.value()->parent = node.get();
+            }
+            node->left = std::move(new_node.value());
+        }
+        // Right child
+        else if (is_less_than(node->value, value))
+        {
+            std::optional<std::unique_ptr<Node<T>>> new_node = _remove(std::move(node->right), value);
+            if (!new_node.has_value())
+            {
+                return {};
+            }
+            if (new_node.value() != nullptr)
+            {
+                new_node.value()->parent = node.get();
+            }
+            node->right = std::move(new_node.value());
+        }
+        // Found node
+        else
+        {
+            // No children
+            if (node->left == nullptr && node->right == nullptr)
+            {
+                // Leaf node -> just remove
+                return nullptr;
+            }
+            // Only right child
+            else if (node->left == nullptr)
+            {
+                // Substitute node with right child
+                return std::move(node->right);
+            }
+            // Only left child
+            else if (node->right == nullptr)
+            {
+                // Substitute node with left child
+                return std::move(node->left);
+            }
+            // Both children
+            else
+            {
+                // Find successor
+                Node<T> *successor = node->right.get();
+                while (successor->left != nullptr)
+                {
+                    successor = successor->left.get();
+                }
+                // Replace node with successor
+                node->value = successor->value;
+                // Remove successor
+                std::optional<std::unique_ptr<Node<T>>> new_node = _remove(std::move(node->right), successor->value);
+                if (!new_node.has_value())
+                {
+                    return {};
+                }
+                if(new_node.value() != nullptr)
+                {
+                    new_node.value()->parent = node.get();
+                }
+                node->right = std::move(new_node.value());
+            }
+        }
+
+        return rebalance(std::move(node));
     }
 
 public:
@@ -569,6 +655,25 @@ public:
             return false;
         }
         root = std::move(new_root);
+        return true;
+    }
+
+    bool remove(const T &value)
+    {
+        /*
+            This check is important for the reason that I move the root to the _remove function meaning if the node does not exist
+            the whole tree becomes empty since I can not access the old root values -> probably should pass raw pointers
+        */
+        if (!has_value(value))
+        {
+            return false;
+        }
+        std::optional<std::unique_ptr<Node<T>>> new_root = _remove(std::move(root), value);
+        if (!new_root.has_value())
+        {
+            return false;
+        }
+        root = std::move(new_root.value());
         return true;
     }
 };
