@@ -953,3 +953,118 @@ TEST(TestCustomType, DeleteValid)
     ASSERT_FALSE(tree.right_child_value({11, 12}).has_value());
     ASSERT_EQ(tree.parent_value({11, 12}), (Point{9, 10}));
 }
+
+TEST(TestMove, MoveConstructorValid) {
+    BinarySearchTree<int> tree;
+
+    tree.insert(8);
+    tree.insert(3);
+    tree.insert(10);
+    tree.insert(9);
+    tree.insert(14);
+    tree.insert(13);
+    tree.insert(1);
+    tree.insert(6);
+    tree.insert(4);
+    tree.insert(7);
+    tree.remove(10);
+
+    ASSERT_EQ(tree.parent_value(9), 13);
+    ASSERT_FALSE(tree.left_child_value(9).has_value());
+    ASSERT_FALSE(tree.right_child_value(9).has_value());
+    ASSERT_EQ(tree.parent_value(3), 8);
+    ASSERT_EQ(tree.left_child_value(3), 1);
+    ASSERT_EQ(tree.right_child_value(3), 6);
+    ASSERT_FALSE(tree.left_child_value(1).has_value());
+    ASSERT_FALSE(tree.right_child_value(1).has_value());
+    ASSERT_EQ(tree.parent_value(1), 3);
+    ASSERT_EQ(tree.left_child_value(6), 4);
+    ASSERT_EQ(tree.right_child_value(6), 7);
+    ASSERT_EQ(tree.parent_value(6), 3);
+    ASSERT_EQ(tree.parent_value(14), 13);
+    ASSERT_FALSE(tree.left_child_value(14).has_value());
+    ASSERT_FALSE(tree.right_child_value(14).has_value());
+    ASSERT_FALSE(tree.parent_value(8).has_value());
+    ASSERT_EQ(tree.left_child_value(8), 3);
+    ASSERT_EQ(tree.right_child_value(8), 13);
+
+    BinarySearchTree<int> tree2(std::move(tree));
+    ASSERT_FALSE(tree.maximum().has_value());
+
+    ASSERT_EQ(tree2.parent_value(9), 13);
+    ASSERT_FALSE(tree2.left_child_value(9).has_value());
+    ASSERT_FALSE(tree2.right_child_value(9).has_value());
+    ASSERT_EQ(tree2.parent_value(3), 8);
+    ASSERT_EQ(tree2.left_child_value(3), 1);
+    ASSERT_EQ(tree2.right_child_value(3), 6);
+    ASSERT_FALSE(tree2.left_child_value(1).has_value());
+    ASSERT_FALSE(tree2.right_child_value(1).has_value());
+    ASSERT_EQ(tree2.parent_value(1), 3);
+    ASSERT_EQ(tree2.left_child_value(6), 4);
+    ASSERT_EQ(tree2.right_child_value(6), 7);
+    ASSERT_EQ(tree2.parent_value(6), 3);
+    ASSERT_EQ(tree2.parent_value(14), 13);
+    ASSERT_FALSE(tree2.left_child_value(14).has_value());
+    ASSERT_FALSE(tree2.right_child_value(14).has_value());
+    ASSERT_FALSE(tree2.parent_value(8).has_value());
+    ASSERT_EQ(tree2.left_child_value(8), 3);
+    ASSERT_EQ(tree2.right_child_value(8), 13);
+}
+
+TEST(TestMove, MoveAssignmentValid)
+{
+    BinarySearchTree<int> tree;
+
+    tree.insert(8);
+    tree.insert(3);
+    tree.insert(10);
+    tree.insert(9);
+    tree.insert(14);
+    tree.insert(13);
+    tree.insert(1);
+    tree.insert(6);
+    tree.insert(4);
+    tree.insert(7);
+    tree.remove(10);
+
+    ASSERT_EQ(tree.parent_value(9), 13);
+    ASSERT_FALSE(tree.left_child_value(9).has_value());
+    ASSERT_FALSE(tree.right_child_value(9).has_value());
+    ASSERT_EQ(tree.parent_value(3), 8);
+    ASSERT_EQ(tree.left_child_value(3), 1);
+    ASSERT_EQ(tree.right_child_value(3), 6);
+    ASSERT_FALSE(tree.left_child_value(1).has_value());
+    ASSERT_FALSE(tree.right_child_value(1).has_value());
+    ASSERT_EQ(tree.parent_value(1), 3);
+    ASSERT_EQ(tree.left_child_value(6), 4);
+    ASSERT_EQ(tree.right_child_value(6), 7);
+    ASSERT_EQ(tree.parent_value(6), 3);
+    ASSERT_EQ(tree.parent_value(14), 13);
+    ASSERT_FALSE(tree.left_child_value(14).has_value());
+    ASSERT_FALSE(tree.right_child_value(14).has_value());
+    ASSERT_FALSE(tree.parent_value(8).has_value());
+    ASSERT_EQ(tree.left_child_value(8), 3);
+    ASSERT_EQ(tree.right_child_value(8), 13);
+
+    BinarySearchTree<int> tree2 = std::move(tree);
+    ASSERT_FALSE(tree.maximum().has_value());
+
+    ASSERT_EQ(tree2.parent_value(9), 13);
+    ASSERT_FALSE(tree2.left_child_value(9).has_value());
+    ASSERT_FALSE(tree2.right_child_value(9).has_value());
+    ASSERT_EQ(tree2.parent_value(3), 8);
+    ASSERT_EQ(tree2.left_child_value(3), 1);
+    ASSERT_EQ(tree2.right_child_value(3), 6);
+    ASSERT_FALSE(tree2.left_child_value(1).has_value());
+    ASSERT_FALSE(tree2.right_child_value(1).has_value());
+    ASSERT_EQ(tree2.parent_value(1), 3);
+    ASSERT_EQ(tree2.left_child_value(6), 4);
+    ASSERT_EQ(tree2.right_child_value(6), 7);
+    ASSERT_EQ(tree2.parent_value(6), 3);
+    ASSERT_EQ(tree2.parent_value(14), 13);
+    ASSERT_FALSE(tree2.left_child_value(14).has_value());
+    ASSERT_FALSE(tree2.right_child_value(14).has_value());
+    ASSERT_FALSE(tree2.parent_value(8).has_value());
+    ASSERT_EQ(tree2.left_child_value(8), 3);
+    ASSERT_EQ(tree2.right_child_value(8), 13);
+}

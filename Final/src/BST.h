@@ -56,6 +56,13 @@ private:
     }
 
 public:
+    BinarySearchTree() = default;
+    BinarySearchTree(const BinarySearchTree &other) = delete;
+    BinarySearchTree &operator=(const BinarySearchTree &other) = delete;
+    BinarySearchTree(BinarySearchTree &&other) = default;
+    BinarySearchTree &operator=(BinarySearchTree &&other) = default;
+    ~BinarySearchTree() = default;
+
     struct Iterator
     {
     public:

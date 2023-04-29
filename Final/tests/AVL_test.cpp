@@ -930,3 +930,88 @@ TEST(TestCustomType, DeleteValid)
     ASSERT_FALSE(tree.right_child_value({11, 12}).has_value());
     ASSERT_EQ(tree.parent_value({11, 12}), (Point{9, 10}));
 }
+
+TEST(TestMove, MoveConstructorValid) {
+    AVLTree<int> tree;
+    tree.insert(20);
+    tree.insert(4);
+    tree.insert(3);
+    tree.insert(9);
+    tree.insert(2);
+    tree.insert(7);
+    tree.insert(11);
+    tree.insert(26);
+    tree.insert(21);
+    tree.insert(30);
+    tree.insert(15);
+
+    ASSERT_TRUE(isNodeCorrect(tree, 9, -1, 4, 20));
+    ASSERT_TRUE(isNodeCorrect(tree, 4, 9, 3, 7));
+    ASSERT_TRUE(isNodeCorrect(tree, 3, 4, 2, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 2, 3, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 7, 4, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 20, 9, 11, 26));
+    ASSERT_TRUE(isNodeCorrect(tree, 11, 20, -1, 15));
+    ASSERT_TRUE(isNodeCorrect(tree, 15, 11, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 26, 20, 21, 30));
+    ASSERT_TRUE(isNodeCorrect(tree, 21, 26, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 30, 26, -1, -1));
+
+    AVLTree<int> tree2(std::move(tree));
+    ASSERT_FALSE(tree.maximum().has_value());
+
+    ASSERT_TRUE(isNodeCorrect(tree2, 9, -1, 4, 20));
+    ASSERT_TRUE(isNodeCorrect(tree2, 4, 9, 3, 7));
+    ASSERT_TRUE(isNodeCorrect(tree2, 3, 4, 2, -1));
+    ASSERT_TRUE(isNodeCorrect(tree2, 2, 3, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree2, 7, 4, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree2, 20, 9, 11, 26));
+    ASSERT_TRUE(isNodeCorrect(tree2, 11, 20, -1, 15));
+    ASSERT_TRUE(isNodeCorrect(tree2, 15, 11, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree2, 26, 20, 21, 30));
+    ASSERT_TRUE(isNodeCorrect(tree2, 21, 26, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree2, 30, 26, -1, -1));
+}
+
+TEST(TestMove, MoveAssignmentValid)
+{
+    AVLTree<int> tree;
+    tree.insert(20);
+    tree.insert(4);
+    tree.insert(3);
+    tree.insert(9);
+    tree.insert(2);
+    tree.insert(7);
+    tree.insert(11);
+    tree.insert(26);
+    tree.insert(21);
+    tree.insert(30);
+    tree.insert(15);
+
+    ASSERT_TRUE(isNodeCorrect(tree, 9, -1, 4, 20));
+    ASSERT_TRUE(isNodeCorrect(tree, 4, 9, 3, 7));
+    ASSERT_TRUE(isNodeCorrect(tree, 3, 4, 2, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 2, 3, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 7, 4, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 20, 9, 11, 26));
+    ASSERT_TRUE(isNodeCorrect(tree, 11, 20, -1, 15));
+    ASSERT_TRUE(isNodeCorrect(tree, 15, 11, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 26, 20, 21, 30));
+    ASSERT_TRUE(isNodeCorrect(tree, 21, 26, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 30, 26, -1, -1));
+
+    AVLTree<int> tree2 = std::move(tree);
+    ASSERT_FALSE(tree.maximum().has_value());
+
+    ASSERT_TRUE(isNodeCorrect(tree2, 9, -1, 4, 20));
+    ASSERT_TRUE(isNodeCorrect(tree2, 4, 9, 3, 7));
+    ASSERT_TRUE(isNodeCorrect(tree2, 3, 4, 2, -1));
+    ASSERT_TRUE(isNodeCorrect(tree2, 2, 3, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree2, 7, 4, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree2, 20, 9, 11, 26));
+    ASSERT_TRUE(isNodeCorrect(tree2, 11, 20, -1, 15));
+    ASSERT_TRUE(isNodeCorrect(tree2, 15, 11, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree2, 26, 20, 21, 30));
+    ASSERT_TRUE(isNodeCorrect(tree2, 21, 26, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree2, 30, 26, -1, -1));
+}
