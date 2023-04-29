@@ -1,5 +1,6 @@
 #include <AVL.h>
 #include <gtest/gtest.h>
+#include <numeric>
 
 AVLTree<int> create_simple_tree()
 {
@@ -21,7 +22,7 @@ bool isNodeCorrect(const AVLTree<T> &tree, const T &node, const T &parent, const
 {
     if (tree.parent_value(node).value_or(-1) != parent && tree.left_child_value(node).value_or(-1) != left && tree.right_child_value(node).value_or(-1) != right)
     {
-        return false; 
+        return false;
     }
     return true;
 }
@@ -626,4 +627,306 @@ TEST(TestPredecessor, RightLeafNodeValid)
     AVLTree<int> tree = create_simple_tree();
     int predecessor = tree.predecessor(7).value();
     ASSERT_EQ(predecessor, 6);
+}
+
+TEST(TestIterator, IteratorForwardValid)
+{
+    AVLTree<int> tree = create_simple_tree();
+
+    std::vector<int> expected = {1, 3, 4, 6, 7, 8, 10, 13, 14};
+    std::vector<int> actual;
+
+    for (auto it = tree.begin(); it != tree.end(); ++it)
+    {
+        actual.push_back(*it);
+    }
+
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(TestIterator, IteratorBackwardValid)
+{
+    AVLTree<int> tree = create_simple_tree();
+
+    std::vector<int> expected = {14, 13, 10, 8, 7, 6, 4, 3, 1};
+    std::vector<int> actual;
+
+    for (auto it = tree.rbegin(); it != tree.rend(); ++it)
+    {
+        actual.push_back(*it);
+    }
+
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(TestIterator, IteratorForwardBackwardValid)
+{
+    AVLTree<int> tree = create_simple_tree();
+
+    std::vector<int> expected = {1, 3, 4, 6, 7, 8, 10, 13, 14, 13, 10, 8, 7, 6, 4, 3, 1};
+    std::vector<int> actual;
+
+    auto it = tree.begin();
+    for (; *it != 14; ++it)
+    {
+        actual.push_back(*it);
+    }
+
+    for (; it != tree.begin(); --it)
+    {
+        actual.push_back(*it);
+    }
+    actual.push_back(*it);
+
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(TestIterator, IteratorAccumulateValid)
+{
+    AVLTree<int> tree = create_simple_tree();
+
+    int expected = 0;
+    for (auto it = tree.begin(); it != tree.end(); ++it)
+    {
+        expected += *it;
+    }
+
+    int actual = std::accumulate(tree.begin(), tree.end(), 0);
+
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(TestIterator, RangeBasedForLoopValid)
+{
+    AVLTree<int> tree = create_simple_tree();
+
+    std::vector<int> expected = {1, 3, 4, 6, 7, 8, 10, 13, 14};
+    std::vector<int> actual;
+
+    for (auto value : tree)
+    {
+        actual.push_back(value);
+    }
+
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(TestIterator, IteratorCopyValid)
+{
+    AVLTree<int> tree = create_simple_tree();
+
+    auto it = tree.begin();
+    auto it2 = it;
+    ASSERT_EQ(*it, *it2);
+    ++it;
+    ASSERT_NE(*it, *it2);
+}
+
+TEST(TestIterator, IteratorFindValid)
+{
+    AVLTree<int> tree = create_simple_tree();
+
+    auto it = tree.find(8);
+    ASSERT_EQ(*it, 8);
+    ++it;
+    ASSERT_EQ(*it, 10);
+    --it;
+    ASSERT_EQ(*it, 8);
+    it = tree.find(14);
+    ASSERT_EQ(*it, 14);
+    --it;
+    ASSERT_EQ(*it, 13);
+    it = tree.find(1);
+    ASSERT_EQ(*it, 1);
+    ++it;
+    ASSERT_EQ(*it, 3);
+}
+
+struct Point
+{
+    int x;
+    int y;
+
+    // enough for binary search tree
+    bool operator<(const Point &other) const
+    {
+        return x < other.x || (x == other.x && y < other.y);
+    }
+
+    // required for assertions
+    bool operator==(const Point &other) const
+    {
+        return x == other.x && y == other.y;
+    }
+
+    bool operator!=(const Point &other) const
+    {
+        return !(*this == other);
+    }
+};
+
+TEST(TestCustomType, InsertValid)
+{
+    AVLTree<Point> tree;
+    tree.insert({5, 6});
+    tree.insert({7, 8});
+    tree.insert({1, 2});
+    tree.insert({9, 10});
+    tree.insert({3, 4});
+    tree.insert({11, 12});
+
+    ASSERT_LT(tree.minimum(), (Point{3, 4}));
+    ASSERT_EQ(tree.minimum(), (Point{1, 2}));
+    ASSERT_EQ(tree.maximum(), (Point{11, 12}));
+    ASSERT_EQ(tree.successor({1, 2}), (Point{3, 4}));
+    ASSERT_EQ(tree.successor({3, 4}), (Point{5, 6}));
+    ASSERT_EQ(tree.successor({5, 6}), (Point{7, 8}));
+    ASSERT_EQ(tree.successor({7, 8}), (Point{9, 10}));
+    ASSERT_EQ(tree.successor({9, 10}), (Point{11, 12}));
+    ASSERT_FALSE(tree.successor({11, 12}).has_value());
+    ASSERT_EQ(tree.predecessor({11, 12}), (Point{9, 10}));
+    ASSERT_EQ(tree.predecessor({9, 10}), (Point{7, 8}));
+    ASSERT_EQ(tree.predecessor({7, 8}), (Point{5, 6}));
+    ASSERT_EQ(tree.predecessor({5, 6}), (Point{3, 4}));
+    ASSERT_EQ(tree.predecessor({3, 4}), (Point{1, 2}));
+    ASSERT_FALSE(tree.predecessor({1, 2}).has_value());
+
+    ASSERT_EQ(tree.left_child_value({5, 6}), (Point{1, 2}));
+    ASSERT_EQ(tree.right_child_value({5, 6}), (Point{9, 10}));
+    ASSERT_FALSE(tree.parent_value({5, 6}).has_value());
+    ASSERT_FALSE(tree.left_child_value({1, 2}).has_value());
+    ASSERT_EQ(tree.right_child_value({1, 2}), (Point{3, 4}));
+    ASSERT_EQ(tree.parent_value({1, 2}), (Point{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({3, 4}).has_value());
+    ASSERT_FALSE(tree.right_child_value({3, 4}).has_value());
+    ASSERT_EQ(tree.parent_value({3, 4}), (Point{1, 2}));
+    ASSERT_FALSE(tree.left_child_value({7, 8}).has_value());
+    ASSERT_FALSE(tree.right_child_value({7, 8}).has_value());
+    ASSERT_EQ(tree.parent_value({7, 8}), (Point{9, 10}));
+    ASSERT_EQ(tree.left_child_value({9, 10}), (Point{7, 8}));
+    ASSERT_EQ(tree.right_child_value({9, 10}), (Point{11, 12}));
+    ASSERT_EQ(tree.parent_value({9, 10}), (Point{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({11, 12}).has_value());
+    ASSERT_FALSE(tree.right_child_value({11, 12}).has_value());
+    ASSERT_EQ(tree.parent_value({11, 12}), (Point{9, 10}));
+}
+
+TEST(TestCustomType, IteratorValid)
+{
+    AVLTree<Point> tree;
+    tree.insert({5, 6});
+    tree.insert({7, 8});
+    tree.insert({1, 2});
+    tree.insert({9, 10});
+    tree.insert({3, 4});
+    tree.insert({11, 12});
+
+    std::vector<Point> expected = {{1, 2}, {3, 4}, {5, 6}, {7, 8}, {9, 10}, {11, 12}};
+    std::vector<Point> actual;
+
+    for (auto it = tree.begin(); it != tree.end(); ++it)
+    {
+        actual.push_back(*it);
+    }
+
+    ASSERT_EQ(expected, actual);
+}
+
+struct Point2
+{
+    int x;
+    int y;
+
+    bool operator==(const Point2 &other) const
+    {
+        return x == other.x && y == other.y;
+    }
+
+    bool operator!=(const Point2 &other) const
+    {
+        return !(*this == other);
+    }
+};
+
+struct PointCompare
+{
+    bool operator()(const Point2 &a, const Point2 &b) const
+    {
+        return a.x < b.x || (a.x == b.x && a.y < b.y);
+    }
+};
+
+TEST(TestCustomType, CustomComparatorValid)
+{
+    AVLTree<Point2, PointCompare> tree;
+    tree.insert({5, 6});
+    tree.insert({7, 8});
+    tree.insert({1, 2});
+    tree.insert({9, 10});
+    tree.insert({3, 4});
+    tree.insert({11, 12});
+
+    ASSERT_EQ(tree.minimum(), (Point2{1, 2}));
+    ASSERT_EQ(tree.maximum(), (Point2{11, 12}));
+    ASSERT_EQ(tree.successor({1, 2}), (Point2{3, 4}));
+    ASSERT_EQ(tree.successor({3, 4}), (Point2{5, 6}));
+    ASSERT_EQ(tree.successor({5, 6}), (Point2{7, 8}));
+    ASSERT_EQ(tree.successor({7, 8}), (Point2{9, 10}));
+    ASSERT_EQ(tree.successor({9, 10}), (Point2{11, 12}));
+    ASSERT_FALSE(tree.successor({11, 12}).has_value());
+    ASSERT_EQ(tree.predecessor({11, 12}), (Point2{9, 10}));
+    ASSERT_EQ(tree.predecessor({9, 10}), (Point2{7, 8}));
+    ASSERT_EQ(tree.predecessor({7, 8}), (Point2{5, 6}));
+    ASSERT_EQ(tree.predecessor({5, 6}), (Point2{3, 4}));
+    ASSERT_EQ(tree.predecessor({3, 4}), (Point2{1, 2}));
+    ASSERT_FALSE(tree.predecessor({1, 2}).has_value());
+
+    ASSERT_EQ(tree.left_child_value({5, 6}), (Point2{1, 2}));
+    ASSERT_EQ(tree.right_child_value({5, 6}), (Point2{9, 10}));
+    ASSERT_FALSE(tree.parent_value({5, 6}).has_value());
+    ASSERT_FALSE(tree.left_child_value({1, 2}).has_value());
+    ASSERT_EQ(tree.right_child_value({1, 2}), (Point2{3, 4}));
+    ASSERT_EQ(tree.parent_value({1, 2}), (Point2{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({3, 4}).has_value());
+    ASSERT_FALSE(tree.right_child_value({3, 4}).has_value());
+    ASSERT_EQ(tree.parent_value({3, 4}), (Point2{1, 2}));
+    ASSERT_FALSE(tree.left_child_value({7, 8}).has_value());
+    ASSERT_FALSE(tree.right_child_value({7, 8}).has_value());
+    ASSERT_EQ(tree.parent_value({7, 8}), (Point2{9, 10}));
+    ASSERT_EQ(tree.left_child_value({9, 10}), (Point2{7, 8}));
+    ASSERT_EQ(tree.right_child_value({9, 10}), (Point2{11, 12}));
+    ASSERT_EQ(tree.parent_value({9, 10}), (Point2{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({11, 12}).has_value());
+    ASSERT_FALSE(tree.right_child_value({11, 12}).has_value());
+    ASSERT_EQ(tree.parent_value({11, 12}), (Point2{9, 10}));
+}
+
+TEST(TestCustomType, DeleteValid)
+{
+    AVLTree<Point> tree;
+    tree.insert({5, 6});
+    tree.insert({7, 8});
+    tree.insert({1, 2});
+    tree.insert({9, 10});
+    tree.insert({3, 4});
+    tree.insert({11, 12});
+
+    ASSERT_TRUE(tree.remove({1, 2}));
+    ASSERT_FALSE(tree.has_value({1, 2}));
+
+    ASSERT_EQ(tree.left_child_value({5, 6}), (Point{3, 4}));
+    ASSERT_EQ(tree.right_child_value({5, 6}), (Point{9, 10}));
+    ASSERT_FALSE(tree.parent_value({5, 6}).has_value());
+    ASSERT_FALSE(tree.left_child_value({3, 4}).has_value());
+    ASSERT_FALSE(tree.right_child_value({3, 4}).has_value());
+    ASSERT_EQ(tree.parent_value({3, 4}), (Point{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({7, 8}).has_value());
+    ASSERT_FALSE(tree.right_child_value({7, 8}).has_value());
+    ASSERT_EQ(tree.parent_value({7, 8}), (Point{9, 10}));
+    ASSERT_EQ(tree.left_child_value({9, 10}), (Point{7, 8}));
+    ASSERT_EQ(tree.right_child_value({9, 10}), (Point{11, 12}));
+    ASSERT_EQ(tree.parent_value({9, 10}), (Point{5, 6}));
+    ASSERT_FALSE(tree.left_child_value({11, 12}).has_value());
+    ASSERT_FALSE(tree.right_child_value({11, 12}).has_value());
+    ASSERT_EQ(tree.parent_value({11, 12}), (Point{9, 10}));
 }
