@@ -1,7 +1,20 @@
-#include "Node.h"
 #include <memory>
 #include <functional>
 #include <optional>
+
+template <typename T>
+struct Node
+{
+    T value;
+    std::unique_ptr<Node<T>> left = nullptr;
+    std::unique_ptr<Node<T>> right = nullptr;
+    Node *parent = nullptr;
+
+    Node(T value)
+    {
+        this->value = value;
+    }
+};
 
 template <typename T, typename Comparator = std::less<T>>
 class BinarySearchTree
