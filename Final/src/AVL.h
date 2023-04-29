@@ -664,7 +664,7 @@ public:
             This check is important for the reason that I move the root to the _remove function meaning if the node does not exist
             the whole tree becomes empty since I can not access the old root values -> probably should pass raw pointers
         */
-        if (!has_value(value))
+        if (return_node_with_value(value) == nullptr)
         {
             return false;
         }
