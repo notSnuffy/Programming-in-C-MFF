@@ -21,7 +21,7 @@ bool isNodeCorrect(const AVLTree<T> &tree, const T &node, const T &parent, const
 {
     if (tree.parent_value(node).value_or(-1) != parent && tree.left_child_value(node).value_or(-1) != left && tree.right_child_value(node).value_or(-1) != right)
     {
-        return false;
+        return false; 
     }
     return true;
 }
@@ -193,6 +193,159 @@ TEST(TestInsert, BigTreeInsert8Valid)
     ASSERT_TRUE(isNodeCorrect(tree, 26, 20, 21, 30));
     ASSERT_TRUE(isNodeCorrect(tree, 21, 26, -1, -1));
     ASSERT_TRUE(isNodeCorrect(tree, 30, 26, -1, -1));
+}
+
+TEST(TestRemove, NoNodeInvalid)
+{
+    AVLTree<int> tree = create_simple_tree();
+    ASSERT_FALSE(tree.remove(100));
+    ASSERT_TRUE(tree.has_value(8));
+    ASSERT_TRUE(tree.has_value(3));
+    ASSERT_TRUE(tree.has_value(10));
+    ASSERT_TRUE(tree.has_value(14));
+    ASSERT_TRUE(tree.has_value(13));
+    ASSERT_TRUE(tree.has_value(1));
+    ASSERT_TRUE(tree.has_value(6));
+    ASSERT_TRUE(tree.has_value(4));
+    ASSERT_TRUE(tree.has_value(7));
+}
+
+TEST(TestRemove, NoChildrenRootValid)
+{
+    AVLTree<int> tree;
+    tree.insert(10);
+    ASSERT_TRUE(tree.has_value(10));
+    ASSERT_TRUE(tree.remove(10));
+    ASSERT_FALSE(tree.has_value(10));
+    ASSERT_FALSE(tree.maximum());
+}
+
+TEST(TestRemove, LeftRotationValid)
+{
+    AVLTree<int> tree;
+    tree.insert(1);
+    tree.insert(0);
+    tree.insert(2);
+    tree.insert(3);
+    ASSERT_TRUE(tree.remove(0));
+
+    ASSERT_TRUE(isNodeCorrect(tree, 2, -1, 1, 3));
+    ASSERT_TRUE(isNodeCorrect(tree, 1, 2, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 3, 2, -1, -1));
+}
+
+TEST(TestRemove, RightRotationValid)
+{
+    AVLTree<int> tree;
+    tree.insert(2);
+    tree.insert(1);
+    tree.insert(0);
+    tree.insert(3);
+    ASSERT_TRUE(tree.remove(3));
+
+    ASSERT_TRUE(isNodeCorrect(tree, 1, -1, 0, 2));
+    ASSERT_TRUE(isNodeCorrect(tree, 0, 1, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 2, 1, -1, -1));
+}
+
+TEST(TestRemove, RightLeftRotationValid)
+{
+    AVLTree<int> tree;
+    tree.insert(1);
+    tree.insert(0);
+    tree.insert(3);
+    tree.insert(2);
+    ASSERT_TRUE(tree.remove(0));
+
+    ASSERT_TRUE(isNodeCorrect(tree, 2, -1, 1, 3));
+    ASSERT_TRUE(isNodeCorrect(tree, 1, 2, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 3, 2, -1, -1));
+}
+
+TEST(TestRemove, LeftRightRotationValid)
+{
+    AVLTree<int> tree;
+    tree.insert(2);
+    tree.insert(0);
+    tree.insert(1);
+    tree.insert(3);
+    ASSERT_TRUE(tree.remove(3));
+
+    ASSERT_TRUE(isNodeCorrect(tree, 1, -1, 0, 2));
+    ASSERT_TRUE(isNodeCorrect(tree, 0, 1, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 2, 1, -1, -1));
+}
+
+TEST(TestRemove, SmallTreeValid)
+{
+    AVLTree<int> tree;
+    tree.insert(2);
+    tree.insert(1);
+    tree.insert(4);
+    tree.insert(3);
+    tree.insert(5);
+    ASSERT_TRUE(tree.remove(1));
+
+    ASSERT_TRUE(isNodeCorrect(tree, 4, -1, 2, 5));
+    ASSERT_TRUE(isNodeCorrect(tree, 2, 4, -1, 3));
+    ASSERT_TRUE(isNodeCorrect(tree, 3, 2, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 5, 4, -1, -1));
+}
+
+TEST(TestRemove, BigTree1Valid)
+{
+    AVLTree<int> tree;
+    tree.insert(6);
+    tree.insert(2);
+    tree.insert(9);
+    tree.insert(1);
+    tree.insert(4);
+    tree.insert(8);
+    tree.insert(10);
+    tree.insert(3);
+    tree.insert(5);
+    tree.insert(7);
+    ASSERT_TRUE(tree.remove(1));
+
+    ASSERT_TRUE(isNodeCorrect(tree, 6, -1, 4, 9));
+    ASSERT_TRUE(isNodeCorrect(tree, 4, 6, 2, 5));
+    ASSERT_TRUE(isNodeCorrect(tree, 2, 4, -1, 3));
+    ASSERT_TRUE(isNodeCorrect(tree, 3, 2, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 5, 4, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 9, 6, 8, 10));
+    ASSERT_TRUE(isNodeCorrect(tree, 8, 9, 7, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 7, 8, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 10, 9, -1, -1));
+}
+
+TEST(TestRemove, BigTree2Valid)
+{
+    AVLTree<int> tree;
+    tree.insert(5);
+    tree.insert(2);
+    tree.insert(8);
+    tree.insert(1);
+    tree.insert(3);
+    tree.insert(7);
+    tree.insert(10);
+    tree.insert(4);
+    tree.insert(6);
+    tree.insert(9);
+    tree.insert(11);
+    tree.insert(12);
+    ASSERT_TRUE(tree.remove(1));
+
+    ASSERT_TRUE(isNodeCorrect(tree, 8, -1, 5, 10));
+    ASSERT_TRUE(isNodeCorrect(tree, 5, 8, 3, 7));
+    ASSERT_TRUE(isNodeCorrect(tree, 3, 5, 2, 4));
+    ASSERT_TRUE(isNodeCorrect(tree, 2, 3, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 4, 3, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 7, 5, 6, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 6, 7, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 10, 8, 9, 11));
+    ASSERT_TRUE(isNodeCorrect(tree, 9, 10, -1, -1));
+    ASSERT_TRUE(isNodeCorrect(tree, 11, 10, -1, 12));
+    ASSERT_TRUE(isNodeCorrect(tree, 12, 11, -1, -1));
 }
 
 TEST(TestHasValueValid, DeeplyNestedTree)
