@@ -18,7 +18,7 @@ BinarySearchTree<int> create_simple_tree()
     return tree;
 }
 
-TEST(TestInsertValid, RootNode)
+TEST(TestInsert, RootNodeValid)
 {
 
     BinarySearchTree<int> tree;
@@ -26,21 +26,21 @@ TEST(TestInsertValid, RootNode)
     ASSERT_TRUE(tree.insert(10));
 }
 
-TEST(TestInsertValid, LeftLeafNode)
+TEST(TestInsert, LeftLeafNodeValid)
 {
     BinarySearchTree<int> tree;
     tree.insert(10);
     ASSERT_TRUE(tree.insert(8));
 }
 
-TEST(TestInsertValid, RightLeafNode)
+TEST(TestInsert, RightLeafNodeValid)
 {
     BinarySearchTree<int> tree;
     tree.insert(10);
     ASSERT_TRUE(tree.insert(8));
 }
 
-TEST(TestInsertValid, DeeplyNestedTree)
+TEST(TestInsert, DeeplyNestedTreeValid)
 {
     BinarySearchTree<int> tree;
     ASSERT_TRUE(tree.insert(3));
@@ -54,7 +54,7 @@ TEST(TestInsertValid, DeeplyNestedTree)
     ASSERT_TRUE(tree.insert(7));
 }
 
-TEST(TestInsertInvalid, DeeplyNestedTree)
+TEST(TestInsert, DeeplyNestedTreeInvalid)
 {
     BinarySearchTree<int> tree;
     ASSERT_TRUE(tree.insert(3));
@@ -71,7 +71,7 @@ TEST(TestInsertInvalid, DeeplyNestedTree)
     ASSERT_FALSE(tree.insert(7));
 }
 
-TEST(TestHasValueValid, DeeplyNestedTree)
+TEST(TestHasValue, DeeplyNestedTreeValid)
 {
     BinarySearchTree<int> tree;
     tree.insert(8);
@@ -94,20 +94,20 @@ TEST(TestHasValueValid, DeeplyNestedTree)
     ASSERT_TRUE(tree.has_value(7));
 }
 
-TEST(TestHasValueInvalid, EmptyTree)
+TEST(TestHasValue, EmptyTreeInvalid)
 {
     BinarySearchTree<int> tree;
     ASSERT_FALSE(tree.has_value(10));
 }
 
-TEST(TestHasValueInvalid, RootOnly)
+TEST(TestHasValue, RootOnlyInvalid)
 {
     BinarySearchTree<int> tree;
     tree.insert(99);
     ASSERT_FALSE(tree.has_value(10));
 }
 
-TEST(TestHasValueInvalid, DeeplyNestedTree)
+TEST(TestHasValue, DeeplyNestedTreeInvalid)
 {
     BinarySearchTree<int> tree = create_simple_tree();
     ASSERT_FALSE(tree.has_value(100));

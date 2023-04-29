@@ -349,7 +349,7 @@ TEST(TestRemove, BigTree2Valid)
     ASSERT_TRUE(isNodeCorrect(tree, 12, 11, -1, -1));
 }
 
-TEST(TestHasValueValid, DeeplyNestedTree)
+TEST(TestHasValue, DeeplyNestedTreeValid)
 {
     AVLTree<int> tree;
     tree.insert(8);
@@ -372,20 +372,20 @@ TEST(TestHasValueValid, DeeplyNestedTree)
     ASSERT_TRUE(tree.has_value(7));
 }
 
-TEST(TestHasValueInvalid, EmptyTree)
+TEST(TestHasValue, EmptyTreeInvalid)
 {
     AVLTree<int> tree;
     ASSERT_FALSE(tree.has_value(10));
 }
 
-TEST(TestHasValueInvalid, RootOnly)
+TEST(TestHasValue, RootOnlyInvalid)
 {
     AVLTree<int> tree;
     tree.insert(99);
     ASSERT_FALSE(tree.has_value(10));
 }
 
-TEST(TestHasValueInvalid, DeeplyNestedTree)
+TEST(TestHasValue, DeeplyNestedTreeInvalid)
 {
     AVLTree<int> tree = create_simple_tree();
     ASSERT_FALSE(tree.has_value(100));
