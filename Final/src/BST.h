@@ -1,3 +1,6 @@
+#ifndef BST_H
+#define BST_H
+
 #include <memory>
 #include <functional>
 #include <optional>
@@ -563,3 +566,5 @@ public:
         return Iterator(current);
     }
 };
+
+#endif // BST_H

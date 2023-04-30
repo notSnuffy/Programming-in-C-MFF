@@ -1,3 +1,6 @@
+#ifndef AVL_H
+#define AVL_H
+
 #include <memory>
 #include <optional>
 #include <functional>
@@ -693,3 +696,5 @@ public:
         return true;
     }
 };
+
+#endif // AVL_H
