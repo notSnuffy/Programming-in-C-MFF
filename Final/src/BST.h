@@ -2,25 +2,25 @@
 #include <functional>
 #include <optional>
 
-template <typename T>
-struct Node
-{
-    T value;
-    std::unique_ptr<Node<T>> left = nullptr;
-    std::unique_ptr<Node<T>> right = nullptr;
-    Node *parent = nullptr;
-
-    Node(T value)
-    {
-        this->value = value;
-    }
-};
-
 template <typename T, typename Comparator = std::less<T>>
 class BinarySearchTree
 {
+public:
+    struct Node
+    {
+        T value;
+        std::unique_ptr<Node> left = nullptr;
+        std::unique_ptr<Node> right = nullptr;
+        Node *parent = nullptr;
+
+        Node(T value)
+        {
+            this->value = value;
+        }
+    };
+
 private:
-    std::unique_ptr<Node<T>> root;
+    std::unique_ptr<Node> root;
 
     bool is_less_than(const T &a, const T &b, Comparator compare = Comparator{}) const
     {
@@ -32,9 +32,9 @@ private:
         return !is_less_than(a, b) && !is_less_than(b, a);
     }
 
-    Node<T> *return_node_with_value(const T &value) const
+    Node *return_node_with_value(const T &value) const
     {
-        Node<T> *current = root.get();
+        Node *current = root.get();
 
         while (current != nullptr)
         {
@@ -75,7 +75,7 @@ public:
 
         Iterator() = default;
 
-        Iterator(Node<T> *node) : current(node) {}
+        Iterator(Node *node) : current(node) {}
 
         bool operator==(const Iterator &other) const
         {
@@ -117,7 +117,7 @@ public:
             // Successor is supposed to be parent of the closest ancestor that is left child
             else
             {
-                Node<T> *parent = current->parent;
+                Node *parent = current->parent;
                 while (parent != nullptr && current == parent->right.get())
                 {
                     current = parent;
@@ -154,7 +154,7 @@ public:
             // Successor is supposed to be parent of the closest ancestor that is right child
             else
             {
-                Node<T> *parent = current->parent;
+                Node *parent = current->parent;
                 while (parent != nullptr && current == parent->left.get())
                 {
                     current = parent;
@@ -173,14 +173,14 @@ public:
         }
 
     private:
-        Node<T> *current = nullptr;
+        Node *current = nullptr;
     };
 
     struct ReverseIterator : Iterator
     {
         ReverseIterator() = default;
 
-        ReverseIterator(Node<T> *node) : Iterator(node) {}
+        ReverseIterator(Node *node) : Iterator(node) {}
 
         ReverseIterator &operator++()
         {
@@ -197,7 +197,7 @@ public:
 
     bool has_value(const T &value) const
     {
-        Node<T> *current = root.get();
+        Node *current = root.get();
 
         while (current != nullptr)
         {
@@ -220,7 +220,7 @@ public:
 
     std::optional<T> left_child_value(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node with value
         if (current == nullptr)
@@ -239,7 +239,7 @@ public:
 
     std::optional<T> right_child_value(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node with value
         if (current == nullptr)
@@ -258,7 +258,7 @@ public:
 
     std::optional<T> parent_value(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node with value
         if (current == nullptr)
@@ -277,7 +277,7 @@ public:
 
     std::optional<T> maximum(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node with value
         if (current == nullptr)
@@ -306,7 +306,7 @@ public:
 
     std::optional<T> minimum(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node with value
         if (current == nullptr)
@@ -335,7 +335,7 @@ public:
 
     std::optional<T> successor(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node
         if (current == nullptr)
@@ -350,7 +350,7 @@ public:
         }
 
         // Successor is supposed to be parent of the closest ancestor that is left child
-        Node<T> *parent = current->parent;
+        Node *parent = current->parent;
         while (parent != nullptr && parent->right != nullptr && is_equal(current->value, parent->right->value))
         {
             current = parent;
@@ -368,7 +368,7 @@ public:
 
     std::optional<T> predecessor(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node
         if (current == nullptr)
@@ -383,7 +383,7 @@ public:
         }
 
         // Predecessor is supposed to be parent of the closest ancestor that is right child
-        Node<T> *parent = current->parent;
+        Node *parent = current->parent;
         while (parent != nullptr && parent->left != nullptr && is_equal(current->value, parent->left->value))
         {
             current = parent;
@@ -404,12 +404,12 @@ public:
         // Insert to root
         if (root == nullptr)
         {
-            root = std::make_unique<Node<T>>(value);
+            root = std::make_unique<Node>(value);
             return true;
         }
 
-        Node<T> *current = root.get();
-        Node<T> *parent = nullptr;
+        Node *current = root.get();
+        Node *parent = nullptr;
 
         while (current != nullptr)
         {
@@ -433,12 +433,12 @@ public:
         // Here we figure out where
         if (is_less_than(value, parent->value))
         {
-            parent->left = std::make_unique<Node<T>>(value);
+            parent->left = std::make_unique<Node>(value);
             parent->left->parent = parent;
         }
         else
         {
-            parent->right = std::make_unique<Node<T>>(value);
+            parent->right = std::make_unique<Node>(value);
             parent->right->parent = parent;
         }
 
@@ -447,7 +447,7 @@ public:
 
     bool remove(const T &value)
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node
         if (current == nullptr)
@@ -478,7 +478,7 @@ public:
         else if (current->left == nullptr || current->right == nullptr)
         {
             // Get child of deleted node
-            std::unique_ptr<Node<T>> child = current->left == nullptr ? std::move(current->right) : std::move(current->left);
+            std::unique_ptr<Node> child = current->left == nullptr ? std::move(current->right) : std::move(current->left);
 
             // Deleted node is the root
             if (current == root.get())
@@ -503,7 +503,7 @@ public:
         else
         {
             // Find successor of current -> has to be minimum in right subtree since current has both children
-            Node<T> *successor = current->right.get();
+            Node *successor = current->right.get();
             while (successor->left != nullptr)
             {
                 successor = successor->left.get();
@@ -520,7 +520,7 @@ public:
 
     Iterator begin() const
     {
-        Node<T> *current = root.get();
+        Node *current = root.get();
         if (current == nullptr)
         {
             return Iterator();
@@ -537,7 +537,7 @@ public:
 
     ReverseIterator rbegin() const
     {
-        Node<T> *current = root.get();
+        Node *current = root.get();
         if (current == nullptr)
         {
             return ReverseIterator();
@@ -554,7 +554,7 @@ public:
 
     Iterator find(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
         if (current == nullptr)
         {
             return Iterator();
