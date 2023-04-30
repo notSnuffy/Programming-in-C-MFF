@@ -285,6 +285,12 @@ private:
     }
 
 public:
+    AVLTree() = default;
+    AVLTree(const AVLTree &other) = delete;
+    AVLTree &operator=(const AVLTree &other) = delete;
+    AVLTree(AVLTree &&other) = default;
+    AVLTree &operator=(AVLTree &&other) = default;
+    ~AVLTree() = default;
     struct Iterator
     {
     public:
