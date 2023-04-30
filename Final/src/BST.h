@@ -16,7 +16,7 @@ public:
         std::unique_ptr<Node> right = nullptr;
         Node *parent = nullptr;
 
-        Node(const T& value) : value(value) {}
+        Node(const T &value) : value(value) {}
     };
 
 private:
