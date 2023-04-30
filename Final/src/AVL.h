@@ -2,23 +2,24 @@
 #include <optional>
 #include <functional>
 
-template <typename T>
-struct Node
-{
-    T value;
-    std::unique_ptr<Node<T>> left = nullptr;
-    std::unique_ptr<Node<T>> right = nullptr;
-    Node *parent = nullptr;
-    int height = 1;
-
-    Node(const T &value) : value(value) {}
-};
 
 template <typename T, typename Comparator = std::less<T>>
 class AVLTree
 {
+public:
+    struct Node
+    {
+        T value;
+        std::unique_ptr<Node> left = nullptr;
+        std::unique_ptr<Node> right = nullptr;
+        Node *parent = nullptr;
+        int height = 1;
+
+        Node(const T &value) : value(value) {}
+    };
+
 private:
-    std::unique_ptr<Node<T>> root;
+    std::unique_ptr<Node> root;
 
     bool is_less_than(const T &a, const T &b, Comparator compare = Comparator{}) const
     {
@@ -30,9 +31,9 @@ private:
         return !is_less_than(a, b) && !is_less_than(b, a);
     }
 
-    Node<T> *return_node_with_value(const T &value) const
+    Node *return_node_with_value(const T &value) const
     {
-        Node<T> *current = root.get();
+        Node *current = root.get();
 
         while (current != nullptr)
         {
@@ -53,7 +54,7 @@ private:
         return nullptr;
     }
 
-    int height(const Node<T> *node) const
+    int height(const Node *node) const
     {
         if (node == nullptr)
         {
@@ -62,19 +63,26 @@ private:
         return node->height;
     }
 
-    void update_height(Node<T> *node)
+    void update_height(Node *node)
     {
         node->height = std::max(height(node->left.get()), height(node->right.get())) + 1;
     }
 
-    std::unique_ptr<Node<T>> left_rotate(std::unique_ptr<Node<T>> node)
+    std::unique_ptr<Node> left_rotate(std::unique_ptr<Node> node)
     {
-        std::unique_ptr<Node<T>> right_child = std::move(node->right);
-        std::unique_ptr<Node<T>> new_node = std::make_unique<Node<T>>(node->value);
+        std::unique_ptr<Node> right_child = std::move(node->right);
+        std::unique_ptr<Node> new_node = std::make_unique<Node>(node->value);
         new_node->right = std::move(right_child->left);
+        if (new_node->right != nullptr)
+        {
+            new_node->right->parent = new_node.get();
+        }
         new_node->parent = right_child.get();
         new_node->left = std::move(node->left);
-
+        if (new_node->left != nullptr)
+        {
+            new_node->left->parent = new_node.get();
+        }
         right_child->parent = node->parent;
         update_height(new_node.get());
         right_child->left = std::move(new_node);
@@ -82,13 +90,21 @@ private:
         return right_child;
     }
 
-    std::unique_ptr<Node<T>> right_rotate(std::unique_ptr<Node<T>> node)
+    std::unique_ptr<Node> right_rotate(std::unique_ptr<Node> node)
     {
-        std::unique_ptr<Node<T>> left_child = std::move(node->left);
-        std::unique_ptr<Node<T>> new_node = std::make_unique<Node<T>>(node->value);
+        std::unique_ptr<Node> left_child = std::move(node->left);
+        std::unique_ptr<Node> new_node = std::make_unique<Node>(node->value);
         new_node->left = std::move(left_child->right);
+        if (new_node->left != nullptr)
+        {
+            new_node->left->parent = new_node.get();
+        }
         new_node->parent = left_child.get();
         new_node->right = std::move(node->right);
+        if (new_node->right != nullptr)
+        {
+            new_node->right->parent = new_node.get();
+        }
 
         left_child->parent = node->parent;
         update_height(new_node.get());
@@ -97,7 +113,7 @@ private:
         return left_child;
     }
 
-    int balance_factor(const Node<T> *node) const
+    int balance_factor(const Node *node) const
     {
         if (node == nullptr)
         {
@@ -106,7 +122,7 @@ private:
         return height(node->left.get()) - height(node->right.get());
     }
 
-    std::unique_ptr<Node<T>> rebalance(std::unique_ptr<Node<T>> node)
+    std::unique_ptr<Node> rebalance(std::unique_ptr<Node> node)
     {
         update_height(node.get());
 
@@ -115,44 +131,44 @@ private:
         // Left Left Case
         if (balance > 1 && balance_factor(node->left.get()) >= 0)
         {
-            return std::unique_ptr<Node<T>>(right_rotate(std::move(node)));
+            return std::unique_ptr<Node>(right_rotate(std::move(node)));
         }
 
         // Right Right Case
         if (balance < -1 && balance_factor(node->right.get()) <= 0)
         {
-            return std::unique_ptr<Node<T>>(left_rotate(std::move(node)));
+            return std::unique_ptr<Node>(left_rotate(std::move(node)));
         }
 
         // Left Right Case
         if (balance > 1 && balance_factor(node->left.get()) < 0)
         {
-            node->left = std::unique_ptr<Node<T>>(left_rotate(std::move(node->left)));
-            return std::unique_ptr<Node<T>>(right_rotate(std::move(node)));
+            node->left = left_rotate(std::move(node->left));
+            return std::unique_ptr<Node>(right_rotate(std::move(node)));
         }
 
         // Right Left Case
         if (balance < -1 && balance_factor(node->right.get()) > 0)
         {
-            node->right = std::unique_ptr<Node<T>>(right_rotate(std::move(node->right)));
-            return std::unique_ptr<Node<T>>(left_rotate(std::move(node)));
+            node->right = std::unique_ptr<Node>(right_rotate(std::move(node->right)));
+            return std::unique_ptr<Node>(left_rotate(std::move(node)));
         }
 
         return node;
     }
 
-    std::optional<std::unique_ptr<Node<T>>> _insert(std::unique_ptr<Node<T>> node, const T &value)
+    std::optional<std::unique_ptr<Node>> _insert(std::unique_ptr<Node> node, const T &value)
     {
         // Leaf node
         if (node == nullptr)
         {
-            return std::make_unique<Node<T>>(value);
+            return std::make_unique<Node>(value);
         }
 
         // Left child
         if (is_less_than(value, node->value))
         {
-            std::unique_ptr<Node<T>> new_node = _insert(std::move(node->left), value).value_or(nullptr);
+            std::unique_ptr<Node> new_node = _insert(std::move(node->left), value).value_or(nullptr);
             if (new_node == nullptr)
             {
                 return {};
@@ -163,7 +179,7 @@ private:
         // Right child
         else if (is_less_than(node->value, value))
         {
-            std::unique_ptr<Node<T>> new_node = _insert(std::move(node->right), value).value_or(nullptr);
+            std::unique_ptr<Node> new_node = _insert(std::move(node->right), value).value_or(nullptr);
             if (new_node == nullptr)
             {
                 return {};
@@ -180,7 +196,7 @@ private:
         return rebalance(std::move(node));
     }
 
-    std::optional<std::unique_ptr<Node<T>>> _remove(std::unique_ptr<Node<T>> node, const T &value)
+    std::optional<std::unique_ptr<Node>> _remove(std::unique_ptr<Node> node, const T &value)
     {
         // No node
         if (node == nullptr)
@@ -191,7 +207,7 @@ private:
         // Left child
         if (is_less_than(value, node->value))
         {
-            std::optional<std::unique_ptr<Node<T>>> new_node = _remove(std::move(node->left), value);
+            std::optional<std::unique_ptr<Node>> new_node = _remove(std::move(node->left), value);
             if (!new_node.has_value())
             {
                 return {};
@@ -205,7 +221,7 @@ private:
         // Right child
         else if (is_less_than(node->value, value))
         {
-            std::optional<std::unique_ptr<Node<T>>> new_node = _remove(std::move(node->right), value);
+            std::optional<std::unique_ptr<Node>> new_node = _remove(std::move(node->right), value);
             if (!new_node.has_value())
             {
                 return {};
@@ -241,7 +257,7 @@ private:
             else
             {
                 // Find successor
-                Node<T> *successor = node->right.get();
+                Node *successor = node->right.get();
                 while (successor->left != nullptr)
                 {
                     successor = successor->left.get();
@@ -249,12 +265,12 @@ private:
                 // Replace node with successor
                 node->value = successor->value;
                 // Remove successor
-                std::optional<std::unique_ptr<Node<T>>> new_node = _remove(std::move(node->right), successor->value);
+                std::optional<std::unique_ptr<Node>> new_node = _remove(std::move(node->right), successor->value);
                 if (!new_node.has_value())
                 {
                     return {};
                 }
-                if(new_node.value() != nullptr)
+                if (new_node.value() != nullptr)
                 {
                     new_node.value()->parent = node.get();
                 }
@@ -266,13 +282,6 @@ private:
     }
 
 public:
-    AVLTree() = default;
-    AVLTree(const AVLTree& other) = delete;
-    AVLTree& operator=(const AVLTree& other) = delete;
-    AVLTree(AVLTree&& other) = default;
-    AVLTree& operator=(AVLTree&& other) = default;
-    ~AVLTree() = default;
-
     struct Iterator
     {
     public:
@@ -285,7 +294,7 @@ public:
 
         Iterator() = default;
 
-        Iterator(Node<T> *node) : current(node) {}
+        Iterator(Node *node) : current(node) {}
 
         bool operator==(const Iterator &other) const
         {
@@ -327,7 +336,7 @@ public:
             // Successor is supposed to be parent of the closest ancestor that is left child
             else
             {
-                Node<T> *parent = current->parent;
+                Node *parent = current->parent;
                 while (parent != nullptr && current == parent->right.get())
                 {
                     current = parent;
@@ -364,7 +373,7 @@ public:
             // Successor is supposed to be parent of the closest ancestor that is right child
             else
             {
-                Node<T> *parent = current->parent;
+                Node *parent = current->parent;
                 while (parent != nullptr && current == parent->left.get())
                 {
                     current = parent;
@@ -383,14 +392,14 @@ public:
         }
 
     private:
-        Node<T> *current = nullptr;
+        Node *current = nullptr;
     };
 
     struct ReverseIterator : Iterator
     {
         ReverseIterator() = default;
 
-        ReverseIterator(Node<T> *node) : Iterator(node) {}
+        ReverseIterator(Node *node) : Iterator(node) {}
 
         ReverseIterator &operator++()
         {
@@ -407,7 +416,7 @@ public:
 
     bool has_value(const T &value) const
     {
-        Node<T> *current = root.get();
+        Node *current = root.get();
 
         while (current != nullptr)
         {
@@ -430,7 +439,7 @@ public:
 
     std::optional<T> left_child_value(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node with value
         if (current == nullptr)
@@ -449,7 +458,7 @@ public:
 
     std::optional<T> right_child_value(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node with value
         if (current == nullptr)
@@ -468,7 +477,7 @@ public:
 
     std::optional<T> parent_value(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node with value
         if (current == nullptr)
@@ -487,7 +496,7 @@ public:
 
     std::optional<T> maximum(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node with value
         if (current == nullptr)
@@ -516,7 +525,7 @@ public:
 
     std::optional<T> minimum(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node with value
         if (current == nullptr)
@@ -545,7 +554,7 @@ public:
 
     std::optional<T> successor(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node
         if (current == nullptr)
@@ -560,7 +569,7 @@ public:
         }
 
         // Successor is supposed to be parent of the closest ancestor that is left child
-        Node<T> *parent = current->parent;
+        Node *parent = current->parent;
         while (parent != nullptr && parent->right != nullptr && is_equal(current->value, parent->right->value))
         {
             current = parent;
@@ -578,7 +587,7 @@ public:
 
     std::optional<T> predecessor(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
 
         // No node
         if (current == nullptr)
@@ -593,7 +602,7 @@ public:
         }
 
         // Predecessor is supposed to be parent of the closest ancestor that is right child
-        Node<T> *parent = current->parent;
+        Node *parent = current->parent;
         while (parent != nullptr && parent->left != nullptr && is_equal(current->value, parent->left->value))
         {
             current = parent;
@@ -611,7 +620,7 @@ public:
 
     Iterator begin() const
     {
-        Node<T> *current = root.get();
+        Node *current = root.get();
         if (current == nullptr)
         {
             return Iterator();
@@ -628,7 +637,7 @@ public:
 
     ReverseIterator rbegin() const
     {
-        Node<T> *current = root.get();
+        Node *current = root.get();
         if (current == nullptr)
         {
             return ReverseIterator();
@@ -645,7 +654,7 @@ public:
 
     Iterator find(const T &value) const
     {
-        Node<T> *current = return_node_with_value(value);
+        Node *current = return_node_with_value(value);
         if (current == nullptr)
         {
             return Iterator();
@@ -656,7 +665,7 @@ public:
 
     bool insert(const T &value)
     {
-        std::unique_ptr<Node<T>> new_root = _insert(std::move(root), value).value_or(nullptr);
+        std::unique_ptr<Node> new_root = _insert(std::move(root), value).value_or(nullptr);
         if (new_root == nullptr)
         {
             return false;
@@ -675,7 +684,7 @@ public:
         {
             return false;
         }
-        std::optional<std::unique_ptr<Node<T>>> new_root = _remove(std::move(root), value);
+        std::optional<std::unique_ptr<Node>> new_root = _remove(std::move(root), value);
         if (!new_root.has_value())
         {
             return false;
