@@ -16,10 +16,7 @@ public:
         std::unique_ptr<Node> right = nullptr;
         Node *parent = nullptr;
 
-        Node(T value)
-        {
-            this->value = value;
-        }
+        Node(const T& value) : value(value) {}
     };
 
 private:
