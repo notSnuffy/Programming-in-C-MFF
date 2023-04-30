@@ -21,8 +21,9 @@ public:
 
 private:
     std::unique_ptr<Node> root;
+    Comparator compare = Comparator{};
 
-    bool is_less_than(const T &a, const T &b, Comparator compare = Comparator{}) const
+    bool is_less_than(const T &a, const T &b) const
     {
         return compare(a, b);
     }

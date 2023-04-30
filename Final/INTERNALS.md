@@ -23,17 +23,17 @@ A binary search tree implementation.
 
 ### **Private Member Variables**
 
-- `root`: A unique pointer to the root of the tree
+- `root`: A unique pointer to the root of the tree.
+- `compare`: A defaultly initialized `Comparator` from the template.
 
 ### **Private Member Function**
 
-#### `bool is_less_than(const T &a, const T &b, Comparator compare = Comparator{}) const`
+#### `bool is_less_than(const T &a, const T &b) const`
 
 Returns `true` if `a` < `b`, `false` otherwise
 
 - `a`: Value of the left operand
 - `b`: Value of the right operand
-- `compare`: Custom comparator defaultly initialized to `Comparator{}` from the template
 
 #### `bool is_equal(const T &a, const T &b) const`
 
@@ -234,17 +234,17 @@ An AVL tree implementation.
 
 ### **Private Member Variables**
 
-- `root`: A unique pointer to the root of the tree
+- `root`: A unique pointer to the root of the tree.
+- `compare`: A defaultly initialized `Comparator` from the template.
 
 ### **Private Member Function**
 
-#### `bool is_less_than(const T &a, const T &b, Comparator compare = Comparator{}) const`
+#### `bool is_less_than(const T &a, const T &b) const`
 
 Returns `true` if `a` < `b`, `false` otherwise
 
 - `a`: Value of the left operand
 - `b`: Value of the right operand
-- `compare`: Custom comparator defaultly initialized to `Comparator{}` from the template
 
 #### `bool is_equal(const T &a, const T &b) const`
 
